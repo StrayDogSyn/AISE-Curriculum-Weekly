@@ -92,7 +92,9 @@
     "plaintextpassword",
     "tokentest",
     "validpassword",
-    "sensitivetest"
+    "sensitivetest",
+    "semgrep",
+    "Semgrep"
   ],
   "flagWords": [],
   "ignorePaths": [
