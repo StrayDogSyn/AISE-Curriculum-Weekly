@@ -2,16 +2,41 @@
 
 ## 🎯 Learning Objectives
 
-You'll practice building practical Python functions that solve real-world financial problems:
+You'll practice br## 📁 Projec## 📁## 📁 Proj  ## 📁 Pr   from decimal import Decimal  # Avoids floating-point errors
+   ```
 
-- **Function Design**: Create modular, reusable code
-- **Parameter Handling**: Work with default values and validation  
-- **Data Types**: Numbers, strings, booleans, and lists
-- **Control Flow**: Conditional logic and loops
-- **String Formatting**: Professional output display
-- **Problem Decomposition**: Break complex problems into simple functions
+## 🛍️ Installation & Setup`## 📁 Project Structure
 
-## 📁 Project Structure
+```text
+week01day01/
+
+### 📝 File Purposes
+```text
+week01day01/
+├── personal_finance_calculator.py    # Enhanced application with all features
+├── starter_code_implementation.py    # Exact starter code functions  
+├── demo.py                          # Comprehensive demo showing both
+├── test_calculator.py               # Test suite for all functions
+├── README.md                        # This documentation
+├── INSTRUCTOR_GUIDE.md             # Teaching guide for TAs
+├── requirements.txt                # Dependencies
+└── pyproject.toml                  # Development configuration
+```## 📝 File Purposes```text
+week01day01/
+├── personal_finance_calculator.py    # Enhanced application with all features
+├── starter_code_implementation.py    # Exact starter code functions  
+├── demo.py                          # Comprehensive demo showing both
+├── test_calculator.py               # Test suite for all functions
+├── README.md                        # This documentation
+├── INSTRUCTOR_GUIDE.md             # Teaching guide for TAs
+├── requirements.txt                # Dependencies
+└── pyproject.toml                  # Development configuration
+```cture
+
+```text
+week01day01/
+├── personal_finance_calculator.py    # Enhanced application with all features
+├── starter_code_implementation.py    # Exact starter code functionscture
 
 ```text
 week01day01/
@@ -23,28 +48,20 @@ week01day01/
 ├── INSTRUCTOR_GUIDE.md             # Teaching guide for TAs
 ├── requirements.txt                # Dependencies
 └── pyproject.toml                  # Development configuration
-```
+``` real problem into code following Python best practices. Remember: every complex system started as simple pieces.
 
-### 📝 File Purposes
+## 📝 Breakout Activity Instructions
 
-- **`starter_code_implementation.py`**: Contains the **exact functions** from the W1D1 starter code with complete implementations
-- **`personal_finance_calculator.py`**: Enhanced version with OOP, type hints, and advanced features  
-- **`demo.py`**: Shows both starter code and enhanced versions in action
-- **`test_calculator.py`**: Validates that all functions work correctly
+**Room Assignment:** 3-4 learners per room  
+**TA Instructions:** One TA per 2 rooms, rotate every 8 minutes
 
-## 👥 Instructor Notes
+**Problem:** Calculate monthly budget and savings potential
 
-### Learning Goals
-- Students build confidence with function implementation
-- Practice real-world problem solving
-- Understand parameter usage and return values
-- See how functions combine to create larger applications
+### Breakout Room Timeline
 
-### Expected Student Outcomes
-- Successfully implement 3-5 financial calculator functions
-- Understand input validation concepts
-- Experience iterative development (start simple, add features)
-- Connect coding to practical applications
+- **Minutes 0-5:** Discuss problem decomposition as a group
+- **Minutes 5-15:** Implement functions individually  
+- **Minutes 15-20:** Share solutions and debug together
 
 ### TA Guidance Points
 
@@ -92,33 +109,13 @@ def generate_budget_report(name, income, expenses, savings):
 
 ### Python Best Practices Demonstrated
 
-1. **Type Hints for Clarity**
-   ```python
-   def calculate_total_income(salary: Union[str, Decimal], side_hustle: Union[str, Decimal] = Decimal('0')) -> Decimal:
-   ```
-
-2. **Input Validation**
+1. **Type Hints & Documentation**
    ```python
    def validate_amount(self, amount: str) -> Decimal:
-       if decimal_amount < 0:
-           raise ValueError("Amount cannot be negative")
+       """Validate and convert string input to Decimal."""
    ```
 
-3. **Comprehensive Documentation**
-   ```python
-   """
-   Calculate total monthly income from multiple sources.
-   
-   Args:
-       salary: Primary monthly salary
-       side_hustle: Additional income (default: 0)
-   
-   Returns:
-       Decimal: Total monthly income
-   """
-   ```
-
-4. **Error Handling**
+2. **Error Handling**
    ```python
    try:
        decimal_amount = Decimal(amount)
@@ -126,12 +123,49 @@ def generate_budget_report(name, income, expenses, savings):
        raise ValueError(f"Invalid amount format: {amount}") from e
    ```
 
-5. **Decimal Precision for Financial Calculations**
+3. **Data Classes & Enums**
    ```python
-   from decimal import Decimal  # Avoids floating-point errors
+   @dataclass
+   class FinancialData:
+       monthly_income: Decimal
+       expenses: Dict[ExpenseCategory, Decimal]
    ```
 
+4. **Logging & Monitoring**
+   ```python
+   logger.info("Personal Finance Calculator initialized")
+   ```
+
+5. **Decimal Precision for Financial Calculations**
+   ```python
+      from decimal import Decimal  # Avoids floating-point errors
+   ```text
+
 ## 🛠️ Installation & Setup
+   ```
+
+## � Project Structure
+
+```
+week01day01/
+├── personal_finance_calculator.py    # Enhanced application with all features
+├── starter_code_implementation.py    # Exact starter code functions  
+├── demo.py                          # Comprehensive demo showing both
+├── test_calculator.py               # Test suite for all functions
+├── README.md                        # This documentation
+├── INSTRUCTOR_GUIDE.md             # Teaching guide for TAs
+├── requirements.txt                # Dependencies
+└── pyproject.toml                  # Development configuration
+```
+
+### 📝 File Purposes
+
+- **`starter_code_implementation.py`**: Contains the **exact functions** from the W1D1 starter code with complete implementations
+- **`personal_finance_calculator.py`**: Enhanced version with OOP, type hints, and advanced features  
+- **`demo.py`**: Shows both starter code and enhanced versions in action
+- **`test_calculator.py`**: Validates that all functions work correctly
+
+## �🛠️ Installation & Setup
 
 ### Prerequisites
 - Python 3.8+ installed
@@ -165,9 +199,13 @@ def generate_budget_report(name, income, expenses, savings):
    ```
 
 ### Development Setup (Optional)
+
 ```bash
 # Install development dependencies
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
+
+# Run with type checking
+mypy personal_finance_calculator.py
 
 # Format code
 black personal_finance_calculator.py
@@ -176,6 +214,9 @@ black personal_finance_calculator.py
 flake8 personal_finance_calculator.py
 ```
 
+## 📖 Usage Example
+
+```text
 ## 📖 Usage Example
 
 ```text
@@ -207,7 +248,7 @@ What percentage of income would you like to save? (default 20%): 25
 
 📋 EXPENSE BREAKDOWN
 ------------------------------
-Housing        : $1,500.00 ( 30.0%)
+Housing        : $ 1500.00 ( 30.0%)
 Food           : $  600.00 ( 12.0%)
 Transportation : $  400.00 (  8.0%)
 Utilities      : $  200.00 (  4.0%)
@@ -219,25 +260,31 @@ Other          : $  100.00 (  2.0%)
 ------------------------------
 1. ✅ Great job! You can meet your savings goal with $500.00 extra to spare.
 2. 🟢 Good spending habits: 65.0% of income.
-```
+```text
 
 ## 🧩 Problem Decomposition (From Starter Code)
 
-### Step 1: Identify Requirements
+### ✅ Starter Code Components Implemented
+- [x] **Income Calculation**: `calculate_total_income(salary, side_hustle=0)`
+- [x] **Fixed Expenses**: `calculate_fixed_expenses(rent, insurance, phone, internet)`  
+- [x] **Savings Potential**: `calculate_savings_potential(income, fixed_expenses, variable_expenses)`
+- [x] **Budget Report**: `generate_budget_report(name, income, expenses, savings)`
+
+### Step 1: Problem Breakdown (As Specified in Starter Code)
 ```text
 # What are the components of a budget?
 # - Income ✅ IMPLEMENTED
 # - Fixed expenses (rent, insurance) ✅ IMPLEMENTED  
 # - Variable expenses (food, entertainment) ✅ IMPLEMENTED
 # - Savings goal ✅ IMPLEMENTED
-```
+```text
 
 ### Step 2: Function Implementation Status
 ```python
 # All starter code functions are now complete!
 income = calculate_total_income(3000, 500)  # ✅ WORKING
 print(f"Total income: ${income}")            # ✅ WORKING
-```
+```text
 
 ### Step 3: Design Data Flow
 ```text
@@ -287,54 +334,56 @@ User Input → Validation → Storage → Calculations → Analysis → Output
 ## 🔧 Extension Activities
 
 ### Beginner Extensions
-1. **Add more expense categories** (education, subscriptions)
-2. **Implement monthly vs. annual views**
-3. **Add simple data persistence** (save/load budgets)
+1. Add expense history tracking
+2. Implement budget alerts
+3. Create expense visualization
 
 ### Intermediate Extensions
-1. **Create expense trends analysis**
-2. **Add budget vs. actual tracking**
-3. **Implement multiple savings goals**
+1. Add multiple income sources
+2. Implement debt tracking
+3. Create monthly comparisons
 
 ### Advanced Extensions
-1. **Add investment calculation features**
-2. **Create web interface with Flask**
-3. **Implement data visualization with matplotlib**
+1. Add investment calculations
+2. Implement tax considerations
+3. Create financial projections
 
 ## 🐛 Common Issues & Solutions
 
-### Issue: "InvalidOperation" Error
-**Cause:** Invalid input format (letters in numbers)  
-**Solution:** Use the validate_amount() method for all user inputs
+### Issue: Invalid Input Handling
+**Problem:** User enters non-numeric values  
+**Solution:** Use try-except with clear error messages
 
-### Issue: Negative Savings Calculation
-**Cause:** Expenses exceed income  
-**Solution:** This is expected behavior - the app shows overspending
+### Issue: Floating Point Precision
+**Problem:** Financial calculations with rounding errors  
+**Solution:** Use Decimal class for precise calculations
 
-### Issue: Import Errors
-**Cause:** Missing dependencies  
-**Solution:** Run `pip install -r requirements.txt`
+### Issue: Negative Values
+**Problem:** User enters negative amounts  
+**Solution:** Validate input ranges
 
 ## 📚 Additional Resources
 
 - [Python Decimal Documentation](https://docs.python.org/3/library/decimal.html)
+- [Python Type Hints Guide](https://docs.python.org/3/library/typing.html)
+- [Python Error Handling Best Practices](https://docs.python.org/3/tutorial/errors.html)
 - [Personal Finance Basics](https://www.investopedia.com/personal-finance-4427760)
-- [Python Best Practices](https://docs.python-guide.org/writing/style/)
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+This is an educational project. Feel free to:
+- Suggest improvements
+- Add new features
+- Fix bugs
+- Enhance documentation
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is for educational purposes as part of the AISE curriculum.
 
 ---
 
 **Happy Coding! 🎉**
 
 *Remember: Start simple, think step by step, and don't be afraid to ask questions!*
+

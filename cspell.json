@@ -96,7 +96,8 @@
     "semgrep",
     "Semgrep",
     "dataclass",
-    "filterwarnings"
+    "filterwarnings",
+    "Pomodoro"
   ],
   "flagWords": [],
   "ignorePaths": [

@@ -88,7 +88,7 @@ When we reconvene, be ready to share:
 3. **Quick demo** (30 seconds)
 
 ## Example Output
-```
+```text
 🛠️  Personal Python Toolkit Demo
 ==================================================
 
