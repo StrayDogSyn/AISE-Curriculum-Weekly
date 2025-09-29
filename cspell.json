@@ -94,7 +94,9 @@
     "validpassword",
     "sensitivetest",
     "semgrep",
-    "Semgrep"
+    "Semgrep",
+    "dataclass",
+    "filterwarnings"
   ],
   "flagWords": [],
   "ignorePaths": [
