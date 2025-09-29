@@ -1,0 +1,11 @@
+# Personal Finance Calculator Dependencies
+# W1D1 Breakout Activity
+
+# No external dependencies required - uses only Python standard library
+# This demonstrates best practices with built-in modules
+
+# For development and testing (optional):
+pytest>=7.4.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0
