@@ -97,7 +97,10 @@
     "Semgrep",
     "dataclass",
     "filterwarnings",
-    "Pomodoro"
+    "Pomodoro",
+    "Petross",
+    "autograding",
+    "prioritizer"
   ],
   "flagWords": [],
   "ignorePaths": [
