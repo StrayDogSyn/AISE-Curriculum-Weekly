@@ -684,6 +684,112 @@ Join our discussions
 
 ---
 
+## 📚 Works Cited
+
+### Development Tools & Technologies
+
+**Programming Languages & Frameworks:**
+- Python Software Foundation. *Python Programming Language*. Version 3.11+. Python Software Foundation, 2024. [https://www.python.org/](https://www.python.org/)
+- Microsoft Corporation. *TypeScript: JavaScript with syntax for types*. Microsoft, 2024. [https://www.typescriptlang.org/](https://www.typescriptlang.org/)
+- Meta Platforms, Inc. *React: A JavaScript library for building user interfaces*. Meta, 2024. [https://react.dev/](https://react.dev/)
+- Vercel, Inc. *Next.js: The React Framework for Production*. Vercel, 2024. [https://nextjs.org/](https://nextjs.org/)
+
+**AI/ML Libraries & Frameworks:**
+- The pandas development team. *pandas: powerful data structures for data analysis, time series, and statistics*. Version 2.0+. NumFOCUS, 2024. [https://pandas.pydata.org/](https://pandas.pydata.org/)
+- NumPy Developers. *NumPy: The fundamental package for scientific computing with Python*. NumPy, 2024. [https://numpy.org/](https://numpy.org/)
+- Matplotlib Development Team. *Matplotlib: Visualization with Python*. NumFOCUS, 2024. [https://matplotlib.org/](https://matplotlib.org/)
+- Scikit-learn Developers. *scikit-learn: Machine Learning in Python*. INRIA, 2024. [https://scikit-learn.org/](https://scikit-learn.org/)
+- PyTorch Team. *PyTorch: An open source machine learning framework*. Meta AI, 2024. [https://pytorch.org/](https://pytorch.org/)
+- TensorFlow Developers. *TensorFlow: An end-to-end open source platform for machine learning*. Google, 2024. [https://www.tensorflow.org/](https://www.tensorflow.org/)
+- Harrison, Chase. *LangChain: Building applications with LLMs through composability*. LangChain, 2024. [https://python.langchain.com/](https://python.langchain.com/)
+
+**Development Environment & Tools:**
+- Microsoft Corporation. *Visual Studio Code*. Version 1.90+. Microsoft, 2024. [https://code.visualstudio.com/](https://code.visualstudio.com/)
+- GitHub, Inc. *GitHub Copilot: Your AI pair programmer*. GitHub, 2024. [https://github.com/features/copilot](https://github.com/features/copilot)
+- Git SCM. *Git: A free and open source distributed version control system*. Software Freedom Conservancy, 2024. [https://git-scm.com/](https://git-scm.com/)
+- GitHub, Inc. *GitHub: Where the world builds software*. GitHub, 2024. [https://github.com/](https://github.com/)
+- Docker, Inc. *Docker: Accelerated Container Application Development*. Docker, 2024. [https://www.docker.com/](https://www.docker.com/)
+
+**Testing & Quality Assurance:**
+- Holger Krekel, et al. *pytest: helps you write better programs*. pytest-dev, 2024. [https://pytest.org/](https://pytest.org/)
+- Python Software Foundation. *unittest: Unit testing framework*. Python Software Foundation, 2024. [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)
+- David Anson. *markdownlint: A Node.js style checker and lint tool for Markdown/CommonMark files*. GitHub, 2024. [https://github.com/DavidAnson/markdownlint](https://github.com/DavidAnson/markdownlint)
+- Street Side Software. *Code Spell Checker: Spelling checker for source code*. Visual Studio Marketplace, 2024. [https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker)
+
+**Documentation & Visualization Tools:**
+- John Gruber. *Markdown: A text-to-HTML conversion tool for web writers*. Daring Fireball, 2024. [https://daringfireball.net/projects/markdown/](https://daringfireball.net/projects/markdown/)
+- Vercel, Inc. *Capsule Render: Dynamic SVG generator for GitHub profiles*. Vercel, 2024. [https://github.com/kyechan99/capsule-render](https://github.com/kyechan99/capsule-render)
+- DenverCoder1. *Readme Typing SVG: Dynamically generated typing animation for your README*. GitHub, 2024. [https://github.com/DenverCoder1/readme-typing-svg](https://github.com/DenverCoder1/readme-typing-svg)
+- Shields.io. *Shields.io: Quality metadata badges for open source projects*. Shields.io, 2024. [https://shields.io/](https://shields.io/)
+
+### Educational Resources & Methodologies
+
+**Programming Best Practices:**
+- Martin, Robert C. *Clean Code: A Handbook of Agile Software Craftsmanship*. Prentice Hall, 2008.
+- Hunt, Andrew, and David Thomas. *The Pragmatic Programmer: Your Journey to Mastery*. 20th Anniversary Edition, Addison-Wesley Professional, 2019.
+- McConnell, Steve. *Code Complete: A Practical Handbook of Software Construction*. 2nd Edition, Microsoft Press, 2004.
+
+**AI/ML Engineering:**
+- Géron, Aurélien. *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow*. 3rd Edition, O'Reilly Media, 2022.
+- Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. *Deep Learning*. MIT Press, 2016.
+- Slatkin, Brett. *Effective Python: 90 Specific Ways to Write Better Python*. 2nd Edition, Addison-Wesley Professional, 2019.
+
+**Software Engineering Principles:**
+- Fowler, Martin. *Refactoring: Improving the Design of Existing Code*. 2nd Edition, Addison-Wesley Professional, 2018.
+- Beck, Kent. *Test Driven Development: By Example*. Addison-Wesley Professional, 2002.
+- Evans, Eric. *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley Professional, 2003.
+
+### Academic & Professional Organizations
+
+**Educational Institutions:**
+- Justice Through Code Initiative. *Applied AI Solutions Engineering Program*. Justice Through Code, 2024. [https://www.justicethroughcode.org/](https://www.justicethroughcode.org/)
+- The Last Mile. *Community Engagement and Digital Literacy Programs*. The Last Mile, 2024. [https://thelastmile.org/](https://thelastmile.org/)
+- The Moth. *Community Storytelling and Public Speaking Programs*. The Moth, 2024. [https://themoth.org/](https://themoth.org/)
+
+**Professional Development:**
+- Outlier AI. *AI Content Development and Model Training*. Outlier, 2024. [https://outlier.ai/](https://outlier.ai/)
+- MongoDB, Inc. *MongoDB University: AI Agent Development Certification*. MongoDB, 2024. [https://university.mongodb.com/](https://university.mongodb.com/)
+- Udemy, Inc. *Professional Development Courses: Full-Stack Development and JavaScript*. Udemy, 2024. [https://www.udemy.com/](https://www.udemy.com/)
+
+### Technical Standards & Documentation
+
+**Python Enhancement Proposals (PEPs):**
+- van Rossum, Guido, Barry Warsaw, and Nick Coghlan. *PEP 8 – Style Guide for Python Code*. Python Software Foundation, 2001. [https://peps.python.org/pep-0008/](https://peps.python.org/pep-0008/)
+- Goodger, David, and Guido van Rossum. *PEP 257 – Docstring Conventions*. Python Software Foundation, 2001. [https://peps.python.org/pep-0257/](https://peps.python.org/pep-0257/)
+- Lehtosalo, Jukka, et al. *PEP 484 – Type Hints*. Python Software Foundation, 2014. [https://peps.python.org/pep-0484/](https://peps.python.org/pep-0484/)
+
+**Web Standards:**
+- World Wide Web Consortium (W3C). *HTML Living Standard*. WHATWG, 2024. [https://html.spec.whatwg.org/](https://html.spec.whatwg.org/)
+- World Wide Web Consortium (W3C). *CSS Specifications*. W3C, 2024. [https://www.w3.org/Style/CSS/](https://www.w3.org/Style/CSS/)
+- Ecma International. *ECMAScript 2024 Language Specification*. Ecma International, 2024. [https://www.ecma-international.org/publications-and-standards/standards/ecma-262/](https://www.ecma-international.org/publications-and-standards/standards/ecma-262/)
+
+### Business & Professional Context
+
+**Company Information:**
+- StrayDog Syndications LLC. *Applied AI Solutions and Digital Innovation*. StrayDog Syndications LLC, 2024. [https://www.straydog-syndications-llc.com/](https://www.straydog-syndications-llc.com/)
+- StrayDog Syndications LLC. *Technology Division: AI Engineering Services*. StrayDog Syndications LLC, 2024. [https://www.straydogsyndicationsllc.tech/](https://www.straydogsyndicationsllc.tech/)
+
+**Professional Profiles:**
+- Petross, Eric 'Hunter'. *LinkedIn Professional Profile*. LinkedIn Corporation, 2024. [https://www.linkedin.com/in/eric-petross-766a08330](https://www.linkedin.com/in/eric-petross-766a08330)
+- StrayDogSyn. *GitHub Professional Portfolio*. GitHub, Inc., 2024. [https://github.com/StrayDogSyn](https://github.com/StrayDogSyn)
+- StrayDogSyn. *Hugging Face AI Model Hub Profile*. Hugging Face, Inc., 2024. [https://huggingface.co/StrayDogSyn](https://huggingface.co/StrayDogSyn)
+
+---
+
+<div align="center">
+
+### 📖 **Citation Style**
+
+*This Works Cited section follows a hybrid format combining MLA 9th Edition guidelines with technical documentation standards appropriate for software engineering and AI development projects. All tools, technologies, and resources have been properly attributed to respect intellectual property and open-source contributions.*
+
+**Last Updated:** September 29, 2025  
+**Document Version:** 1.0  
+**Author:** Eric 'Hunter' Petross (@StrayDogSyn)
+
+</div>
+
+---
+
 <div align="center">
 
 ### 💝 **Built with ❤️ by the AISE Community**
