@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 W1D1 Breakout 2: Personal Python Toolkit - Starter Template
-Author: [Your Name Here]
+Author: Eric 'Hunter' Petross (@StrayDogSyn)
+Title: Applied AI Solutions Engineer
+Company: StrayDog Syndications LLC
 Date: September 29, 2025
 
 Replace the placeholder functions below with your own personalized toolkit!
