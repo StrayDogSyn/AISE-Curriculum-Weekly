@@ -167,12 +167,326 @@ def calculate_commute_cost(miles_per_day, days_per_week, mpg, gas_price_per_gall
     }
 
 
+def sleep_vs_energy_calculator(hours_slept, sleep_quality=7, stress_level=5):
+    """
+    Calculate energy level based on sleep hours, quality, and stress
+    
+    Problem it solves: Helps optimize sleep patterns by understanding how
+    different factors affect daily energy levels for better productivity.
+    
+    Args:
+        hours_slept (float): Number of hours slept last night
+        sleep_quality (int): Sleep quality rating 1-10 (default: 7)
+        stress_level (int): Current stress level 1-10 (default: 5)
+    
+    Returns:
+        dict: Energy analysis with recommendations
+    """
+    if hours_slept < 0 or hours_slept > 24:
+        return "Error: Hours slept must be between 0 and 24"
+    if not (1 <= sleep_quality <= 10):
+        return "Error: Sleep quality must be between 1 and 10"
+    if not (1 <= stress_level <= 10):
+        return "Error: Stress level must be between 1 and 10"
+    
+    # Base energy from sleep duration (optimal: 7-9 hours)
+    if 7 <= hours_slept <= 9:
+        base_energy = 100
+    elif 6 <= hours_slept < 7 or 9 < hours_slept <= 10:
+        base_energy = 85
+    elif 5 <= hours_slept < 6 or 10 < hours_slept <= 11:
+        base_energy = 70
+    else:
+        base_energy = 50
+    
+    # Quality modifier (1-10 scale becomes 0.5-1.5 multiplier)
+    quality_modifier = 0.5 + (sleep_quality / 10)
+    
+    # Stress penalty (1-10 scale becomes 0-45 point reduction)
+    stress_penalty = (stress_level - 1) * 5
+    
+    # Calculate final energy level
+    energy_level = max(0, min(100, (base_energy * quality_modifier) - stress_penalty))
+    
+    # Generate recommendations
+    recommendations = []
+    if hours_slept < 7:
+        recommendations.append("Consider going to bed earlier for more sleep")
+    elif hours_slept > 9:
+        recommendations.append("You might be oversleeping - try a consistent 7-8 hour schedule")
+    
+    if sleep_quality < 6:
+        recommendations.append("Improve sleep environment: dark, cool, quiet room")
+    
+    if stress_level > 7:
+        recommendations.append("Try stress reduction: meditation, exercise, or deep breathing")
+    
+    if energy_level < 60:
+        recommendations.append("Consider a short nap (20-30 min) or light exercise")
+    
+    return {
+        'energy_level': round(energy_level, 1),
+        'sleep_hours': hours_slept,
+        'quality_rating': sleep_quality,
+        'stress_rating': stress_level,
+        'status': 'High Energy' if energy_level >= 80 else 'Moderate Energy' if energy_level >= 60 else 'Low Energy',
+        'recommendations': recommendations
+    }
+
+
+def ai_project_time_estimator(complexity_level, team_size, experience_level):
+    """
+    Estimate AI/ML project completion time based on complexity and team factors
+    
+    Problem it solves: Helps AI engineers like me estimate realistic project
+    timelines for client proposals and resource planning.
+    
+    Args:
+        complexity_level (str): 'simple', 'moderate', 'complex', 'research'
+        team_size (int): Number of team members
+        experience_level (str): 'junior', 'mid', 'senior', 'expert'
+    
+    Returns:
+        dict: Project timeline estimates and recommendations
+    """
+    complexity_hours = {
+        'simple': 80,      # Basic ML model, existing data
+        'moderate': 200,   # Custom model, data preprocessing
+        'complex': 500,    # Multi-model system, extensive engineering
+        'research': 1000   # Novel approach, R&D required
+    }
+    
+    experience_multipliers = {
+        'junior': 1.8,     # Learning curve, more debugging
+        'mid': 1.3,        # Some efficiency, occasional guidance needed
+        'senior': 1.0,     # Baseline efficiency
+        'expert': 0.7      # High efficiency, fewer roadblocks
+    }
+    
+    if complexity_level not in complexity_hours:
+        return "Error: Complexity must be 'simple', 'moderate', 'complex', or 'research'"
+    if experience_level not in experience_multipliers:
+        return "Error: Experience must be 'junior', 'mid', 'senior', or 'expert'"
+    if team_size < 1:
+        return "Error: Team size must be at least 1"
+    
+    # Base hours for complexity
+    base_hours = complexity_hours[complexity_level]
+    
+    # Apply experience multiplier
+    adjusted_hours = base_hours * experience_multipliers[experience_level]
+    
+    # Team size efficiency (diminishing returns)
+    if team_size == 1:
+        team_efficiency = 1.0
+    elif team_size <= 3:
+        team_efficiency = 0.8  # Small team, good coordination
+    elif team_size <= 6:
+        team_efficiency = 0.9  # Medium team, some overhead
+    else:
+        team_efficiency = 1.1  # Large team, communication overhead
+    
+    final_hours = adjusted_hours * team_efficiency
+    
+    # Convert to weeks (40 hours/week)
+    weeks = final_hours / 40
+    
+    # Generate project phases
+    phases = {
+        'research_planning': round(final_hours * 0.15),
+        'data_preparation': round(final_hours * 0.25),
+        'model_development': round(final_hours * 0.35),
+        'testing_validation': round(final_hours * 0.15),
+        'deployment_docs': round(final_hours * 0.10)
+    }
+    
+    return {
+        'total_hours': round(final_hours),
+        'estimated_weeks': round(weeks, 1),
+        'complexity': complexity_level,
+        'team_size': team_size,
+        'experience': experience_level,
+        'phases': phases,
+        'daily_hours_needed': round(final_hours / (weeks * 5), 1) if weeks > 0 else 0
+    }
+
+
+def cryptocurrency_portfolio_tracker(investments, current_prices):
+    """
+    Track cryptocurrency portfolio performance and calculate gains/losses
+    
+    Problem it solves: Helps track crypto investments across multiple coins
+    with real-time performance analysis for informed trading decisions.
+    
+    Args:
+        investments (dict): {'symbol': {'amount': float, 'buy_price': float}}
+        current_prices (dict): {'symbol': float} current price per coin
+    
+    Returns:
+        dict: Portfolio analysis with performance metrics
+    """
+    if not investments or not current_prices:
+        return "Error: Both investments and current prices are required"
+    
+    portfolio_analysis = {
+        'coins': {},
+        'total_invested': 0,
+        'current_value': 0,
+        'total_gain_loss': 0,
+        'total_gain_loss_percent': 0
+    }
+    
+    for symbol, investment in investments.items():
+        if symbol not in current_prices:
+            continue
+            
+        amount = investment['amount']
+        buy_price = investment['buy_price']
+        current_price = current_prices[symbol]
+        
+        invested_amount = amount * buy_price
+        current_value = amount * current_price
+        gain_loss = current_value - invested_amount
+        gain_loss_percent = (gain_loss / invested_amount * 100) if invested_amount > 0 else 0
+        
+        portfolio_analysis['coins'][symbol] = {
+            'amount': amount,
+            'buy_price': buy_price,
+            'current_price': current_price,
+            'invested': round(invested_amount, 2),
+            'current_value': round(current_value, 2),
+            'gain_loss': round(gain_loss, 2),
+            'gain_loss_percent': round(gain_loss_percent, 2),
+            'status': 'Profit' if gain_loss > 0 else 'Loss' if gain_loss < 0 else 'Break Even'
+        }
+        
+        portfolio_analysis['total_invested'] += invested_amount
+        portfolio_analysis['current_value'] += current_value
+    
+    portfolio_analysis['total_gain_loss'] = portfolio_analysis['current_value'] - portfolio_analysis['total_invested']
+    
+    if portfolio_analysis['total_invested'] > 0:
+        portfolio_analysis['total_gain_loss_percent'] = round(
+            (portfolio_analysis['total_gain_loss'] / portfolio_analysis['total_invested']) * 100, 2
+        )
+    
+    # Round totals
+    portfolio_analysis['total_invested'] = round(portfolio_analysis['total_invested'], 2)
+    portfolio_analysis['current_value'] = round(portfolio_analysis['current_value'], 2)
+    portfolio_analysis['total_gain_loss'] = round(portfolio_analysis['total_gain_loss'], 2)
+    
+    return portfolio_analysis
+
+
+def remote_work_productivity_score(work_hours, meetings, deep_work_blocks, distractions):
+    """
+    Calculate daily productivity score for remote work optimization
+    
+    Problem it solves: Helps remote workers like me analyze daily productivity
+    patterns to optimize work-from-home effectiveness and time management.
+    
+    Args:
+        work_hours (float): Total hours worked today
+        meetings (int): Number of meetings attended
+        deep_work_blocks (int): Number of uninterrupted work sessions (2+ hours)
+        distractions (int): Number of significant interruptions
+    
+    Returns:
+        dict: Productivity analysis with optimization suggestions
+    """
+    if work_hours < 0 or work_hours > 16:
+        return "Error: Work hours should be between 0 and 16"
+    if meetings < 0 or deep_work_blocks < 0 or distractions < 0:
+        return "Error: All counts must be non-negative"
+    
+    # Base score from work hours (optimal: 6-8 hours)
+    if 6 <= work_hours <= 8:
+        hours_score = 40
+    elif 4 <= work_hours < 6 or 8 < work_hours <= 10:
+        hours_score = 35
+    elif work_hours < 4:
+        hours_score = 20
+    else:  # > 10 hours
+        hours_score = 25  # Diminishing returns, potential burnout
+    
+    # Meeting efficiency (optimal: 2-4 meetings)
+    if meetings <= 1:
+        meeting_score = 25  # Good focus time
+    elif 2 <= meetings <= 4:
+        meeting_score = 30  # Balanced collaboration
+    elif 5 <= meetings <= 6:
+        meeting_score = 20  # Meeting-heavy day
+    else:
+        meeting_score = 10  # Meeting overload
+    
+    # Deep work bonus (each block worth 10 points, max 30)
+    deep_work_score = min(deep_work_blocks * 10, 30)
+    
+    # Distraction penalty (each distraction -3 points)
+    distraction_penalty = distractions * 3
+    
+    # Calculate final score
+    productivity_score = max(0, hours_score + meeting_score + deep_work_score - distraction_penalty)
+    
+    # Generate productivity level
+    if productivity_score >= 80:
+        level = "Highly Productive"
+        emoji = "🚀"
+    elif productivity_score >= 65:
+        level = "Productive"
+        emoji = "✅"
+    elif productivity_score >= 50:
+        level = "Moderately Productive"
+        emoji = "⚠️"
+    else:
+        level = "Low Productivity"
+        emoji = "📉"
+    
+    # Generate suggestions
+    suggestions = []
+    if work_hours < 6:
+        suggestions.append("Consider extending work hours for better output")
+    elif work_hours > 10:
+        suggestions.append("Reduce work hours to avoid burnout and maintain quality")
+    
+    if meetings > 5:
+        suggestions.append("Try to consolidate or decline non-essential meetings")
+    elif meetings == 0:
+        suggestions.append("Consider scheduling team check-ins for collaboration")
+    
+    if deep_work_blocks == 0:
+        suggestions.append("Block calendar time for 2+ hour focused work sessions")
+    elif deep_work_blocks >= 3:
+        suggestions.append("Excellent deep work! Maintain this focused approach")
+    
+    if distractions > 5:
+        suggestions.append("Minimize distractions: notifications off, dedicated workspace")
+    
+    return {
+        'productivity_score': productivity_score,
+        'level': level,
+        'emoji': emoji,
+        'work_hours': work_hours,
+        'meetings': meetings,
+        'deep_work_blocks': deep_work_blocks,
+        'distractions': distractions,
+        'breakdown': {
+            'hours_score': hours_score,
+            'meeting_score': meeting_score,
+            'deep_work_score': deep_work_score,
+            'distraction_penalty': -distraction_penalty
+        },
+        'suggestions': suggestions
+    }
+
+
 def main():
     """
     Demonstrate all toolkit functions with realistic examples
     """
-    print("🛠️  Personal Python Toolkit Demo")
-    print("=" * 50)
+    print("🛠️  Eric 'Hunter' Petross's Personal Python Toolkit Demo")
+    print("Applied AI Solutions Engineer | @StrayDogSyn")
+    print("=" * 60)
     
     # Academic function demo
     print("\n📚 Academic Helper:")
@@ -236,8 +550,48 @@ def main():
     print(f"Monthly cost: ${commute_data['monthly_cost']}")
     print(f"Yearly cost: ${commute_data['yearly_cost']}")
     
-    print("\n" + "=" * 50)
-    print("✅ Toolkit demo complete! All functions working properly.")
+    # NEW: Sleep vs Energy Calculator
+    print("\n😴 Sleep vs Energy Calculator:")
+    sleep_data = sleep_vs_energy_calculator(hours_slept=6.5, sleep_quality=6, stress_level=7)
+    print(f"Hours slept: {sleep_data['sleep_hours']}")
+    print(f"Sleep quality: {sleep_data['quality_rating']}/10")
+    print(f"Stress level: {sleep_data['stress_rating']}/10")
+    print(f"Energy level: {sleep_data['energy_level']}% ({sleep_data['status']})")
+    print(f"Recommendations: {', '.join(sleep_data['recommendations'][:2])}")
+    
+    # NEW: AI Project Time Estimator
+    print("\n🤖 AI Project Time Estimator:")
+    project_data = ai_project_time_estimator('complex', 3, 'senior')
+    print(f"Project complexity: {project_data['complexity']}")
+    print(f"Team size: {project_data['team_size']} ({project_data['experience']} level)")
+    print(f"Estimated time: {project_data['estimated_weeks']} weeks ({project_data['total_hours']} hours)")
+    print(f"Daily hours needed: {project_data['daily_hours_needed']} hours/day")
+    
+    # NEW: Cryptocurrency Portfolio Tracker
+    print("\n₿ Crypto Portfolio Tracker:")
+    investments = {
+        'BTC': {'amount': 0.1, 'buy_price': 45000},
+        'ETH': {'amount': 2.0, 'buy_price': 3000}
+    }
+    current_prices = {'BTC': 43000, 'ETH': 3200}
+    crypto_data = cryptocurrency_portfolio_tracker(investments, current_prices)
+    print(f"Total invested: ${crypto_data['total_invested']}")
+    print(f"Current value: ${crypto_data['current_value']}")
+    print(f"Total gain/loss: ${crypto_data['total_gain_loss']} ({crypto_data['total_gain_loss_percent']}%)")
+    
+    # NEW: Remote Work Productivity Score
+    print("\n🏠 Remote Work Productivity Score:")
+    productivity_data = remote_work_productivity_score(
+        work_hours=7.5, meetings=3, deep_work_blocks=2, distractions=4
+    )
+    print(f"Productivity Score: {productivity_data['productivity_score']}/100 {productivity_data['emoji']}")
+    print(f"Level: {productivity_data['level']}")
+    print(f"Work Hours: {productivity_data['work_hours']}, Meetings: {productivity_data['meetings']}")
+    print(f"Deep Work Blocks: {productivity_data['deep_work_blocks']}, Distractions: {productivity_data['distractions']}")
+    print(f"Top suggestion: {productivity_data['suggestions'][0] if productivity_data['suggestions'] else 'Keep up the great work!'}")
+    
+    print("\n" + "=" * 60)
+    print("✅ Enhanced AI Solutions Toolkit demo complete! All functions optimized for professional use.")
 
 
 if __name__ == "__main__":
