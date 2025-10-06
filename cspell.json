@@ -118,7 +118,21 @@
     "Goodger",
     "Lehtosalo",
     "Jukka",
-    "WHATWG"
+    "WHATWG",
+    "feelslike",
+    "sealevel",
+    "windspeed",
+    "winddirection",
+    "windgust",
+    "openweathermap",
+    "inclassmaterial",
+    "listdir",
+    "csvfile",
+    "Skyhawk",
+    "Embraer",
+    "Aérospatiale",
+    "colorama",
+    "leetcode"
   ],
   "flagWords": [],
   "ignorePaths": [
