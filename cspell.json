@@ -132,7 +132,17 @@
     "Embraer",
     "Aérospatiale",
     "colorama",
-    "leetcode"
+    "leetcode",
+    "kwargs",
+    "deque",
+    "maxlen",
+    "Pythonic",
+    "popleft",
+    "stdlib",
+    "itertools",
+    "pathlib",
+    "nonlocal",
+    "Beazley"
   ],
   "flagWords": [],
   "ignorePaths": [
