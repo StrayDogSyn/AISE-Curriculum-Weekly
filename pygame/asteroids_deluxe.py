@@ -326,67 +326,64 @@ class Ship:
             self.hyperspace_cooldown -= 1
     
     def draw(self, screen):
-        """Draw the ship as a teardrop"""
+        """Draw the ship as a classic triangle"""
         rad = math.radians(self.angle)
-        
+
         # Flicker when invulnerable
         if self.invulnerable and pygame.time.get_ticks() % 200 < 100:
             return
-        
-        # Draw shield
+
+        # Draw shield with animated pulse
         if self.shield:
+            pulse = math.sin(pygame.time.get_ticks() * 0.005) * 3
             shield_color = (*current_scheme.bright, 100)
             surf = pygame.Surface((self.radius * 3, self.radius * 3), pygame.SRCALPHA)
             pygame.draw.circle(surf, shield_color, (self.radius * 1.5, self.radius * 1.5),
-                             int(self.radius * 1.5), 3)
+                             int(self.radius * 1.5 + pulse), 3)
             screen.blit(surf, (int(self.x - self.radius * 1.5),
                               int(self.y - self.radius * 1.5)))
 
         # Use primary color for ship
         ship_color = current_scheme.primary
-        
-        # Create teardrop shape - pointed front, rounded back
-        # Define points around the teardrop in local coordinates
-        teardrop_points = []
-        
-        # Front point (sharp nose)
-        nose_length = self.radius * 1.2
-        
-        # Create smooth teardrop using multiple points
-        num_points = 12
-        for i in range(num_points):
-            # Angle around the back of the ship (from -150° to +150°)
-            angle_offset = math.pi * (i / (num_points - 1) - 0.5) * 1.67  # 1.67 gives us about 300°
-            
-            # Distance from center - creates the teardrop curve
-            # More distance at the back (angle_offset near 0), less at sides
-            curve_factor = abs(math.cos(angle_offset * 0.8))
-            distance = self.radius * 0.7 * (0.4 + 0.6 * curve_factor)
-            
-            # Calculate point in local coordinates (before rotation)
-            local_x = math.sin(angle_offset) * distance
-            local_y = -math.cos(angle_offset) * distance * 0.6  # Squash vertically
-            
-            # Rotate point based on ship's angle
-            rotated_x = local_x * math.cos(rad) - local_y * math.sin(rad)
-            rotated_y = local_x * math.sin(rad) + local_y * math.cos(rad)
-            
-            # Translate to ship position
-            teardrop_points.append((self.x + rotated_x, self.y + rotated_y))
-        
-        # Add the nose point at the front
-        nose_x = self.x + math.sin(rad) * nose_length
-        nose_y = self.y - math.cos(rad) * nose_length
-        teardrop_points.insert(num_points // 2, (nose_x, nose_y))
-        
-        # Draw the teardrop
-        pygame.draw.polygon(screen, ship_color, teardrop_points, 2)
-        
-        # Optional: Add a small thruster detail at the back when thrusting
+
+        # Create classic triangle shape (like original Asteroids)
+        # Front point (nose)
+        nose_x = self.x + math.sin(rad) * self.radius * 1.5
+        nose_y = self.y - math.cos(rad) * self.radius * 1.5
+
+        # Left wing
+        left_angle = rad + math.radians(140)
+        left_x = self.x + math.sin(left_angle) * self.radius
+        left_y = self.y - math.cos(left_angle) * self.radius
+
+        # Right wing
+        right_angle = rad - math.radians(140)
+        right_x = self.x + math.sin(right_angle) * self.radius
+        right_y = self.y - math.cos(right_angle) * self.radius
+
+        # Draw the triangle
+        pygame.draw.polygon(screen, ship_color, [(nose_x, nose_y), (left_x, left_y), (right_x, right_y)], 2)
+
+        # Add thruster flame when thrusting
         if self.is_thrusting:
-            back_x = self.x - math.sin(rad) * self.radius * 0.5
-            back_y = self.y + math.cos(rad) * self.radius * 0.5
-            pygame.draw.circle(screen, current_scheme.accent, (int(back_x), int(back_y)), 3)
+            # Flame point at the back
+            flame_length = self.radius * random.uniform(0.5, 0.8)
+            back_x = self.x - math.sin(rad) * flame_length
+            back_y = self.y + math.cos(rad) * flame_length
+
+            # Left flame edge
+            left_flame_angle = rad + math.radians(160)
+            left_flame_x = self.x + math.sin(left_flame_angle) * self.radius * 0.6
+            left_flame_y = self.y - math.cos(left_flame_angle) * self.radius * 0.6
+
+            # Right flame edge
+            right_flame_angle = rad - math.radians(160)
+            right_flame_x = self.x + math.sin(right_flame_angle) * self.radius * 0.6
+            right_flame_y = self.y - math.cos(right_flame_angle) * self.radius * 0.6
+
+            # Draw animated flame
+            pygame.draw.polygon(screen, current_scheme.accent,
+                              [(back_x, back_y), (left_flame_x, left_flame_y), (right_flame_x, right_flame_y)], 0)
     
     def shoot(self):
         """Create a bullet"""
@@ -744,6 +741,45 @@ def cycle_color_scheme():
     current_scheme = SCHEMES[current_scheme_index]
 
 
+def draw_terminal_panel(screen, x, y, width, height, border_color, fill_alpha=40):
+    """Draw a modern terminal-style panel with border and semi-transparent fill"""
+    # Create semi-transparent background
+    panel_surf = pygame.Surface((width, height), pygame.SRCALPHA)
+    bg_color = (*current_scheme.bg, fill_alpha)
+    panel_surf.fill(bg_color)
+
+    # Draw border with slight glow effect
+    pygame.draw.rect(panel_surf, border_color, (0, 0, width, height), 2)
+
+    # Draw corner accents
+    corner_size = 8
+    # Top-left
+    pygame.draw.line(panel_surf, border_color, (0, corner_size), (0, 0), 3)
+    pygame.draw.line(panel_surf, border_color, (0, 0), (corner_size, 0), 3)
+    # Top-right
+    pygame.draw.line(panel_surf, border_color, (width - corner_size, 0), (width - 1, 0), 3)
+    pygame.draw.line(panel_surf, border_color, (width - 1, 0), (width - 1, corner_size), 3)
+    # Bottom-left
+    pygame.draw.line(panel_surf, border_color, (0, height - corner_size), (0, height - 1), 3)
+    pygame.draw.line(panel_surf, border_color, (0, height - 1), (corner_size, height - 1), 3)
+    # Bottom-right
+    pygame.draw.line(panel_surf, border_color, (width - corner_size, height - 1), (width - 1, height - 1), 3)
+    pygame.draw.line(panel_surf, border_color, (width - 1, height - corner_size), (width - 1, height - 1), 3)
+
+    screen.blit(panel_surf, (x, y))
+
+
+def draw_text_with_shadow(screen, text, font, x, y, color, shadow_offset=2):
+    """Draw text with a subtle shadow for better readability"""
+    # Shadow
+    shadow_surf = font.render(text, True, (0, 0, 0))
+    screen.blit(shadow_surf, (x + shadow_offset, y + shadow_offset))
+    # Main text
+    text_surf = font.render(text, True, color)
+    screen.blit(text_surf, (x, y))
+    return text_surf.get_width()
+
+
 def create_explosion(x, y, particles, color_type='accent'):
     """Create particle explosion effect"""
     for _ in range(30):
@@ -769,9 +805,11 @@ lives = 3
 wave = 1
 game_over = False
 
-font = pygame.font.Font(None, 36)
-small_font = pygame.font.Font(None, 24)
-large_font = pygame.font.Font(None, 72)
+# Modern terminal fonts with better hierarchy
+font = pygame.font.Font(None, 42)
+small_font = pygame.font.Font(None, 28)
+large_font = pygame.font.Font(None, 96)
+tiny_font = pygame.font.Font(None, 20)
 
 # Shooting cooldown
 shoot_cooldown = 0
@@ -1042,52 +1080,120 @@ while running:
         # Draw scanlines and vignette
         draw_scanlines(screen)
         draw_vignette(screen)
-        
-        # Draw UI
-        score_text = font.render(f'Score: {score}', True, current_scheme.primary)
-        screen.blit(score_text, (10, 10))
 
-        lives_text = font.render(f'Lives: {lives}', True, current_scheme.primary)
-        screen.blit(lives_text, (10, 50))
+        # Draw modern HUD with panels
+        # Top-left info panel
+        panel_width = 280
+        panel_height = 110
+        draw_terminal_panel(screen, 10, 10, panel_width, panel_height, current_scheme.primary, fill_alpha=80)
 
-        # Wave
-        wave_text = font.render(f'Wave: {wave}', True, current_scheme.primary)
-        screen.blit(wave_text, (WIDTH//2 - 70, 10))
+        # Score
+        draw_text_with_shadow(screen, 'SCORE', tiny_font, 25, 20, current_scheme.dim)
+        draw_text_with_shadow(screen, f'{score:,}', font, 25, 40, current_scheme.primary)
 
-        # Color scheme name
-        scheme_text = small_font.render(f'{current_scheme.name}', True, current_scheme.dim)
-        screen.blit(scheme_text, (WIDTH//2 - 70, 50))
+        # Lives
+        draw_text_with_shadow(screen, 'LIVES', tiny_font, 25, 75, current_scheme.dim)
+        for i in range(lives):
+            # Draw small ship icons
+            ship_x = 25 + i * 30
+            ship_y = 100
+            # Draw mini triangle
+            nose_x = ship_x + 8
+            nose_y = ship_y - 5
+            left_x = ship_x
+            left_y = ship_y + 5
+            right_x = ship_x + 16
+            right_y = ship_y + 5
+            pygame.draw.polygon(screen, current_scheme.primary,
+                              [(nose_x, nose_y), (left_x, left_y), (right_x, right_y)], 2)
 
-        # Power-up indicators
-        if ship.rapid_fire:
-            rapid_text = small_font.render('RAPID FIRE!', True, current_scheme.accent)
-            screen.blit(rapid_text, (WIDTH//2 - 60, 75))
+        # Top-center wave panel
+        wave_panel_width = 240
+        draw_terminal_panel(screen, WIDTH//2 - wave_panel_width//2, 10, wave_panel_width, 110,
+                          current_scheme.accent, fill_alpha=80)
 
-        if ship.shield:
-            shield_text = small_font.render('SHIELD!', True, current_scheme.accent)
-            screen.blit(shield_text, (WIDTH//2 - 40, 100))
+        # Wave counter
+        draw_text_with_shadow(screen, 'WAVE', tiny_font, WIDTH//2 - 30, 20, current_scheme.dim)
+        draw_text_with_shadow(screen, f'{wave}', large_font, WIDTH//2 - 30, 35, current_scheme.accent)
 
-        # Controls
-        controls = small_font.render('Arrows: Move | LCtrl: Shoot | LShift: Warp | C: Color | F11: Fullscreen',
-                                   True, current_scheme.dim)
-        screen.blit(controls, (10, HEIGHT - 30))
+        # Scheme name
+        scheme_width = small_font.render(current_scheme.name, True, current_scheme.dim).get_width()
+        draw_text_with_shadow(screen, current_scheme.name, tiny_font,
+                            WIDTH//2 - scheme_width//2 - 10, 90, current_scheme.dim)
+
+        # Power-up indicators (top-right)
+        if ship.rapid_fire or ship.shield:
+            powerup_panel_width = 200
+            powerup_panel_height = 60 if (ship.rapid_fire and ship.shield) else 40
+            draw_terminal_panel(screen, WIDTH - powerup_panel_width - 10, 10,
+                              powerup_panel_width, powerup_panel_height,
+                              current_scheme.bright, fill_alpha=100)
+
+            y_offset = 18
+            if ship.rapid_fire:
+                draw_text_with_shadow(screen, '⚡ RAPID FIRE', small_font,
+                                    WIDTH - powerup_panel_width + 5, y_offset, current_scheme.accent)
+                y_offset += 30
+
+            if ship.shield:
+                draw_text_with_shadow(screen, '🛡 SHIELD', small_font,
+                                    WIDTH - powerup_panel_width + 5, y_offset, current_scheme.bright)
+
+        # Bottom controls bar
+        controls_panel_height = 40
+        draw_terminal_panel(screen, 10, HEIGHT - controls_panel_height - 10,
+                          WIDTH - 20, controls_panel_height, current_scheme.dim, fill_alpha=60)
+
+        controls_text = 'ARROWS: Move  |  L-CTRL: Shoot  |  L-SHIFT: Warp  |  C: Color  |  F11: Fullscreen'
+        controls_width = tiny_font.render(controls_text, True, current_scheme.dim).get_width()
+        draw_text_with_shadow(screen, controls_text, tiny_font,
+                            WIDTH//2 - controls_width//2, HEIGHT - 35, current_scheme.dim, shadow_offset=1)
     
     else:
-        # Game over screen
+        # Game over screen with modern terminal panel
         draw_scanlines(screen)
         draw_vignette(screen)
 
-        game_over_text = large_font.render('GAME OVER', True, current_scheme.accent)
-        screen.blit(game_over_text, (WIDTH//2 - 200, HEIGHT//2 - 100))
+        # Center panel
+        panel_width = 600
+        panel_height = 400
+        panel_x = WIDTH//2 - panel_width//2
+        panel_y = HEIGHT//2 - panel_height//2
 
-        final_score = font.render(f'Final Score: {score}', True, current_scheme.primary)
-        screen.blit(final_score, (WIDTH//2 - 140, HEIGHT//2))
+        draw_terminal_panel(screen, panel_x, panel_y, panel_width, panel_height,
+                          current_scheme.accent, fill_alpha=120)
 
-        final_wave = font.render(f'Wave Reached: {wave}', True, current_scheme.primary)
-        screen.blit(final_wave, (WIDTH//2 - 140, HEIGHT//2 + 50))
+        # Game Over title with flashing effect
+        flash = int(pygame.time.get_ticks() / 500) % 2
+        title_color = current_scheme.accent if flash else current_scheme.bright
+        game_over_text = large_font.render('GAME OVER', True, title_color)
+        go_width = game_over_text.get_width()
+        draw_text_with_shadow(screen, 'GAME OVER', large_font,
+                            WIDTH//2 - go_width//2, panel_y + 50, title_color, shadow_offset=3)
 
-        restart_text = font.render('Press SPACE to restart', True, current_scheme.dim)
-        screen.blit(restart_text, (WIDTH//2 - 170, HEIGHT//2 + 120))
+        # Stats section
+        draw_text_with_shadow(screen, 'FINAL STATISTICS', small_font,
+                            WIDTH//2 - 110, panel_y + 160, current_scheme.dim)
+
+        # Score
+        draw_text_with_shadow(screen, 'SCORE', tiny_font,
+                            WIDTH//2 - 180, panel_y + 200, current_scheme.dim)
+        draw_text_with_shadow(screen, f'{score:,}', font,
+                            WIDTH//2 - 180, panel_y + 220, current_scheme.primary)
+
+        # Wave
+        draw_text_with_shadow(screen, 'WAVE', tiny_font,
+                            WIDTH//2 + 50, panel_y + 200, current_scheme.dim)
+        draw_text_with_shadow(screen, f'{wave}', font,
+                            WIDTH//2 + 50, panel_y + 220, current_scheme.primary)
+
+        # Restart instruction with pulsing effect
+        pulse_alpha = int(127 + 127 * math.sin(pygame.time.get_ticks() * 0.003))
+        restart_color = (*current_scheme.bright, pulse_alpha)
+        restart_surf = pygame.Surface((400, 40), pygame.SRCALPHA)
+        restart_text = small_font.render('► PRESS SPACE TO RESTART ◄', True, restart_color)
+        restart_width = restart_text.get_width()
+        screen.blit(restart_text, (WIDTH//2 - restart_width//2, panel_y + 320))
     
     pygame.display.flip()
 
