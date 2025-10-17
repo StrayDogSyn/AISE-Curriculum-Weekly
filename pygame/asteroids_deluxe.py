@@ -7,10 +7,13 @@ pygame.init()
 pygame.mixer.init()
 
 # Screen settings
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1200, 900  # Increased by 150%
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Asteroids Deluxe")
 clock = pygame.time.Clock()
+
+# Fullscreen state
+fullscreen = False
 
 # Color Schemes - Matrix terminal vibes
 class ColorScheme:
@@ -236,8 +239,8 @@ class Ship:
             # Spawn thrust particles
             self.spawn_thrust_particles(particles)
 
-        # Hyperspace jump (RSHIFT)
-        if keys[pygame.K_RSHIFT] and self.hyperspace_cooldown <= 0:
+        # Hyperspace jump (LSHIFT)
+        if keys[pygame.K_LSHIFT] and self.hyperspace_cooldown <= 0:
             self.hyperspace_jump(particles)
             self.hyperspace_cooldown = 180  # 3 seconds
     
@@ -794,6 +797,14 @@ while running:
             if event.key == pygame.K_c and not game_over:
                 cycle_color_scheme()
 
+            # Toggle fullscreen
+            if event.key == pygame.K_F11:
+                fullscreen = not fullscreen
+                if fullscreen:
+                    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+                else:
+                    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
             # Restart game
             if event.key == pygame.K_SPACE and game_over:
                 ship = Ship(WIDTH//2, HEIGHT//2)
@@ -814,10 +825,10 @@ while running:
         # Handle ship input
         ship.handle_input(keys, particles)
 
-        # Shooting (RCTRL)
+        # Shooting (LCTRL)
         delay = RAPID_FIRE_DELAY if ship.rapid_fire else SHOOT_DELAY
 
-        if keys[pygame.K_RCTRL] and shoot_cooldown <= 0:
+        if keys[pygame.K_LCTRL] and shoot_cooldown <= 0:
             bullets.append(ship.shoot())
             shoot_cooldown = delay
 
@@ -1057,7 +1068,7 @@ while running:
             screen.blit(shield_text, (WIDTH//2 - 40, 100))
 
         # Controls
-        controls = small_font.render('Arrows: Move | RCtrl: Shoot | RShift: Warp | C: Color',
+        controls = small_font.render('Arrows: Move | LCtrl: Shoot | LShift: Warp | C: Color | F11: Fullscreen',
                                    True, current_scheme.dim)
         screen.blit(controls, (10, HEIGHT - 30))
     
