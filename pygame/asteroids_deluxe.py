@@ -42,44 +42,44 @@ current_scheme = SCHEMES[current_scheme_index]
 try:
     # Laser sounds - we'll cycle through these
     laser_sounds = [
-        pygame.mixer.Sound('sounds/retro-laser-shot-04.wav'),
-        pygame.mixer.Sound('sounds/retro-laser-shot-05.wav'),
-        pygame.mixer.Sound('sounds/retro-laser-shot-06.wav'),
-        pygame.mixer.Sound('sounds/puny_laser.wav'),
+        pygame.mixer.Sound('pygame/sounds/retro-laser-shot-04.wav'),
+        pygame.mixer.Sound('pygame/sounds/retro-laser-shot-05.wav'),
+        pygame.mixer.Sound('pygame/sounds/retro-laser-shot-06.wav'),
+        pygame.mixer.Sound('pygame/sounds/puny_laser.wav'),
     ]
     current_laser_index = 0
-    
+
     # Big laser for UFO - try laser-element or fallback to first retro laser
     try:
-        ufo_laser_sound = pygame.mixer.Sound('sounds/laser-element-only-2.wav')
+        ufo_laser_sound = pygame.mixer.Sound('pygame/sounds/laser-element-only-2.wav')
     except:
         ufo_laser_sound = laser_sounds[0]  # Fallback to a regular laser
-    
+
     # Explosion sounds - randomize for variety
     explosion_sounds = [
-        pygame.mixer.Sound('sounds/explosion_asteroid.wav'),
-        pygame.mixer.Sound('sounds/explosion_asteroid2.wav'),
-        pygame.mixer.Sound('sounds/space-explosion.wav'),
-        pygame.mixer.Sound('sounds/pelicula-sfx.wav'),
+        pygame.mixer.Sound('pygame/sounds/explosion_asteroid.wav'),
+        pygame.mixer.Sound('pygame/sounds/explosion_asteroid2.wav'),
+        pygame.mixer.Sound('pygame/sounds/space-explosion.wav'),
+        pygame.mixer.Sound('pygame/sounds/pelicula-sfx.wav'),
     ]
-    
+
     # Achievement/Level up sounds
     achievement_sounds = [
-        pygame.mixer.Sound('sounds/achievement.wav'),
-        pygame.mixer.Sound('sounds/jingle_achievement_00.wav'),
-        pygame.mixer.Sound('sounds/jingle_achievement_01.wav'),
+        pygame.mixer.Sound('pygame/sounds/achievement.wav'),
+        pygame.mixer.Sound('pygame/sounds/jingle_achievement_00.wav'),
+        pygame.mixer.Sound('pygame/sounds/jingle_achievement_01.wav'),
     ]
-    
+
     # Level up sounds - NOTE: These are MP3 files!
     # pygame.mixer.Sound works with mp3 on most systems
     level_up_sounds = [
-        pygame.mixer.Sound('sounds/level-up-01.mp3'),
-        pygame.mixer.Sound('sounds/level-up-02.mp3'),
-        pygame.mixer.Sound('sounds/level-up-03.mp3'),
+        pygame.mixer.Sound('pygame/sounds/level-up-01.mp3'),
+        pygame.mixer.Sound('pygame/sounds/level-up-02.mp3'),
+        pygame.mixer.Sound('pygame/sounds/level-up-03.mp3'),
     ]
-    
+
     # Power-up/special sounds
-    powerup_sound = pygame.mixer.Sound('sounds/magic-reveal.wav')
+    powerup_sound = pygame.mixer.Sound('pygame/sounds/magic-reveal.wav')
     
     # Adjust volumes for balance
     for sound in laser_sounds:
@@ -184,7 +184,7 @@ class Particle:
 
 
 class Ship:
-    def __init__(self, x, y, controls='arrows', player_num=1):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
         self.angle = 0
@@ -195,8 +195,6 @@ class Ship:
         self.max_speed = 8
         self.friction = 0.99
         self.radius = 15
-        self.controls = controls  # 'arrows' or 'wasd'
-        self.player_num = player_num  # For multiplayer distinction
         
         # Power-ups
         self.rapid_fire = False
@@ -215,42 +213,31 @@ class Ship:
     
     def handle_input(self, keys, particles):
         """Handle rotation, thrust, and special abilities"""
-        # Determine which keys to use based on control scheme
-        if self.controls == 'arrows':
-            left, right, thrust, shoot, hyperspace = (
-                pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, 
-                pygame.K_RCTRL, pygame.K_RSHIFT
-            )
-        else:  # wasd
-            left, right, thrust, shoot, hyperspace = (
-                pygame.K_a, pygame.K_d, pygame.K_w,
-                pygame.K_LCTRL, pygame.K_LSHIFT
-            )
-        
-        if keys[left]:
+        # Arrow key controls
+        if keys[pygame.K_LEFT]:
             self.angle -= self.rotation_speed
-        if keys[right]:
+        if keys[pygame.K_RIGHT]:
             self.angle += self.rotation_speed
-        
+
         self.is_thrusting = False
-        if keys[thrust]:
+        if keys[pygame.K_UP]:
             self.is_thrusting = True
             # Thrust in the direction we're facing
             rad = math.radians(self.angle)
             self.vx += math.sin(rad) * self.thrust_power
             self.vy -= math.cos(rad) * self.thrust_power
-            
+
             # Cap max speed
             speed = math.sqrt(self.vx**2 + self.vy**2)
             if speed > self.max_speed:
                 self.vx = (self.vx / speed) * self.max_speed
                 self.vy = (self.vy / speed) * self.max_speed
-            
+
             # Spawn thrust particles
             self.spawn_thrust_particles(particles)
-        
-        # Hyperspace jump
-        if keys[hyperspace] and self.hyperspace_cooldown <= 0:
+
+        # Hyperspace jump (RSHIFT)
+        if keys[pygame.K_RSHIFT] and self.hyperspace_cooldown <= 0:
             self.hyperspace_jump(particles)
             self.hyperspace_cooldown = 180  # 3 seconds
     
@@ -347,13 +334,13 @@ class Ship:
         if self.shield:
             shield_color = (*current_scheme.bright, 100)
             surf = pygame.Surface((self.radius * 3, self.radius * 3), pygame.SRCALPHA)
-            pygame.draw.circle(surf, shield_color, (self.radius * 1.5, self.radius * 1.5), 
+            pygame.draw.circle(surf, shield_color, (self.radius * 1.5, self.radius * 1.5),
                              int(self.radius * 1.5), 3)
-            screen.blit(surf, (int(self.x - self.radius * 1.5), 
+            screen.blit(surf, (int(self.x - self.radius * 1.5),
                               int(self.y - self.radius * 1.5)))
-        
-        # Use primary color for main ship, bright for player 2 in multiplayer
-        ship_color = current_scheme.bright if self.player_num == 2 else current_scheme.primary
+
+        # Use primary color for ship
+        ship_color = current_scheme.primary
         
         # Create teardrop shape - pointed front, rounded back
         # Define points around the teardrop in local coordinates
@@ -765,10 +752,7 @@ def create_explosion(x, y, particles, color_type='accent'):
 
 
 # Game setup
-ships = [
-    Ship(WIDTH//2 - 50, HEIGHT//2, 'arrows', 1),  # Player 1
-    Ship(WIDTH//2 + 50, HEIGHT//2, 'wasd', 2)      # Player 2
-]
+ship = Ship(WIDTH//2, HEIGHT//2)
 
 asteroids = spawn_asteroids(4)
 bullets = []
@@ -777,18 +761,17 @@ particles = []
 powerups = []
 ufo = None
 
-scores = [0, 0]  # Scores for player 1 and player 2
-lives = [3, 3]
+score = 0
+lives = 3
 wave = 1
 game_over = False
-multiplayer = False  # Toggle with M key
 
 font = pygame.font.Font(None, 36)
 small_font = pygame.font.Font(None, 24)
 large_font = pygame.font.Font(None, 72)
 
-# Shooting cooldown for each player
-shoot_cooldowns = [0, 0]
+# Shooting cooldown
+shoot_cooldown = 0
 SHOOT_DELAY = 10
 RAPID_FIRE_DELAY = 5
 
@@ -807,57 +790,42 @@ while running:
             running = False
         
         if event.type == pygame.KEYDOWN:
-            # Toggle multiplayer
-            if event.key == pygame.K_m and not game_over:
-                multiplayer = not multiplayer
-            
             # Cycle color schemes
             if event.key == pygame.K_c and not game_over:
                 cycle_color_scheme()
-            
+
             # Restart game
             if event.key == pygame.K_SPACE and game_over:
-                ships = [
-                    Ship(WIDTH//2 - 50, HEIGHT//2, 'arrows', 1),
-                    Ship(WIDTH//2 + 50, HEIGHT//2, 'wasd', 2)
-                ]
+                ship = Ship(WIDTH//2, HEIGHT//2)
                 asteroids = spawn_asteroids(4)
                 bullets = []
                 ufo_bullets = []
                 particles = []
                 powerups = []
                 ufo = None
-                scores = [0, 0]
-                lives = [3, 3]
+                score = 0
+                lives = 3
                 wave = 1
                 game_over = False
     
     if not game_over:
         keys = pygame.key.get_pressed()
-        
-        # Determine active ships
-        active_ships = [ships[0]]
-        if multiplayer:
-            active_ships.append(ships[1])
-        
+
         # Handle ship input
-        for i, ship in enumerate(active_ships):
-            ship.handle_input(keys, particles)
-            
-            # Shooting
-            shoot_key = pygame.K_RCTRL if ship.controls == 'arrows' else pygame.K_LCTRL
-            delay = RAPID_FIRE_DELAY if ship.rapid_fire else SHOOT_DELAY
-            
-            if keys[shoot_key] and shoot_cooldowns[i] <= 0:
-                bullets.append(ship.shoot())
-                shoot_cooldowns[i] = delay
-            
-            if shoot_cooldowns[i] > 0:
-                shoot_cooldowns[i] -= 1
-        
-        # Update ships
-        for ship in active_ships:
-            ship.update()
+        ship.handle_input(keys, particles)
+
+        # Shooting (RCTRL)
+        delay = RAPID_FIRE_DELAY if ship.rapid_fire else SHOOT_DELAY
+
+        if keys[pygame.K_RCTRL] and shoot_cooldown <= 0:
+            bullets.append(ship.shoot())
+            shoot_cooldown = delay
+
+        if shoot_cooldown > 0:
+            shoot_cooldown -= 1
+
+        # Update ship
+        ship.update()
         
         # Update particles
         for particle in particles[:]:
@@ -882,7 +850,7 @@ while running:
         
         # Update UFO
         if ufo:
-            new_bullet = ufo.update(active_ships)
+            new_bullet = ufo.update([ship])
             if new_bullet:
                 ufo_bullets.append(new_bullet)
             
@@ -909,14 +877,8 @@ while running:
                 if asteroid.check_collision_bullet(bullet):
                     if bullet in bullets:
                         bullets.remove(bullet)
-                    
-                    # Determine which player shot it
-                    # (In real game, bullets would track owner)
-                    if multiplayer:
-                        scores[0] += asteroid.points // 2
-                        scores[1] += asteroid.points // 2
-                    else:
-                        scores[0] += asteroid.points
+
+                    score += asteroid.points
                     
                     # Particle explosion
                     create_explosion(asteroid.x, asteroid.y, particles)
@@ -940,133 +902,98 @@ while running:
                 if ufo.check_collision_bullet(bullet):
                     if bullet in bullets:
                         bullets.remove(bullet)
-                    
-                    scores[0] += 500  # Big points for UFO
-                    if multiplayer:
-                        scores[1] += 500
-                    
+
+                    score += 500  # Big points for UFO
+
                     create_explosion(ufo.x, ufo.y, particles, 'bright')
                     play_explosion_sound()  # Big explosion
                     play_achievement_sound()  # Bonus achievement sound for high value target!
                     ufo = None
         
         # Check ship-asteroid collisions
-        for i, ship in enumerate(active_ships):
-            if ship.invulnerable or ship.shield:
-                continue
-            
+        if not ship.invulnerable and not ship.shield:
             for asteroid in asteroids[:]:
                 if asteroid.check_collision_ship(ship):
-                    lives[i] -= 1
-                    
+                    lives -= 1
+
                     # Explosion
                     create_explosion(ship.x, ship.y, particles, 'accent')
                     play_explosion_sound()  # Ship destruction
-                    
+
                     # Remove asteroid
                     asteroids.remove(asteroid)
-                    
+
                     # Reset ship
-                    if ship.controls == 'arrows':
-                        active_ships[i] = Ship(WIDTH//2 - 50, HEIGHT//2, 'arrows', 1)
-                    else:
-                        active_ships[i] = Ship(WIDTH//2 + 50, HEIGHT//2, 'wasd', 2)
-                    
-                    active_ships[i].invulnerable = True
-                    active_ships[i].invulnerable_timer = 120  # 2 seconds
-                    
-                    if lives[i] <= 0:
-                        if not multiplayer or all(l <= 0 for l in lives):
-                            game_over = True
-                    
+                    ship = Ship(WIDTH//2, HEIGHT//2)
+                    ship.invulnerable = True
+                    ship.invulnerable_timer = 120  # 2 seconds
+
+                    if lives <= 0:
+                        game_over = True
+
                     break
         
         # Check UFO bullet-ship collisions
-        for bullet in ufo_bullets[:]:
-            for i, ship in enumerate(active_ships):
-                if ship.invulnerable or ship.shield:
-                    continue
-                
+        if not ship.invulnerable and not ship.shield:
+            for bullet in ufo_bullets[:]:
                 distance = math.sqrt((ship.x - bullet.x)**2 + (ship.y - bullet.y)**2)
                 if distance < ship.radius + bullet.radius:
                     if bullet in ufo_bullets:
                         ufo_bullets.remove(bullet)
-                    
-                    lives[i] -= 1
-                    
+
+                    lives -= 1
+
                     create_explosion(ship.x, ship.y, particles, 'accent')
                     play_explosion_sound()  # Ship hit by UFO
-                    
-                    if ship.controls == 'arrows':
-                        active_ships[i] = Ship(WIDTH//2 - 50, HEIGHT//2, 'arrows', 1)
-                    else:
-                        active_ships[i] = Ship(WIDTH//2 + 50, HEIGHT//2, 'wasd', 2)
-                    
-                    active_ships[i].invulnerable = True
-                    active_ships[i].invulnerable_timer = 120
-                    
-                    if lives[i] <= 0:
-                        if not multiplayer or all(l <= 0 for l in lives):
-                            game_over = True
-                    
+
+                    ship = Ship(WIDTH//2, HEIGHT//2)
+                    ship.invulnerable = True
+                    ship.invulnerable_timer = 120
+
+                    if lives <= 0:
+                        game_over = True
+
                     break
         
         # Check ship-UFO collision
-        if ufo:
-            for i, ship in enumerate(active_ships):
-                if ship.invulnerable or ship.shield:
-                    continue
-                
-                if ufo.check_collision_ship(ship):
-                    lives[i] -= 1
-                    
-                    create_explosion(ship.x, ship.y, particles, 'accent')
-                    create_explosion(ufo.x, ufo.y, particles, 'bright')
-                    play_explosion_sound()  # Double explosion - mutual destruction!
-                    play_explosion_sound()  # Play twice for dramatic effect
-                    
-                    ufo = None
-                    
-                    if ship.controls == 'arrows':
-                        active_ships[i] = Ship(WIDTH//2 - 50, HEIGHT//2, 'arrows', 1)
-                    else:
-                        active_ships[i] = Ship(WIDTH//2 + 50, HEIGHT//2, 'wasd', 2)
-                    
-                    active_ships[i].invulnerable = True
-                    active_ships[i].invulnerable_timer = 120
-                    
-                    if lives[i] <= 0:
-                        if not multiplayer or all(l <= 0 for l in lives):
-                            game_over = True
-                    
-                    break
+        if ufo and not ship.invulnerable and not ship.shield:
+            if ufo.check_collision_ship(ship):
+                lives -= 1
+
+                create_explosion(ship.x, ship.y, particles, 'accent')
+                create_explosion(ufo.x, ufo.y, particles, 'bright')
+                play_explosion_sound()  # Double explosion - mutual destruction!
+                play_explosion_sound()  # Play twice for dramatic effect
+
+                ufo = None
+
+                ship = Ship(WIDTH//2, HEIGHT//2)
+                ship.invulnerable = True
+                ship.invulnerable_timer = 120
+
+                if lives <= 0:
+                    game_over = True
         
         # Check power-up collisions
         for powerup in powerups[:]:
-            for i, ship in enumerate(active_ships):
-                if powerup.check_collision_ship(ship):
-                    powerups.remove(powerup)
-                    powerup_sound.play()
-                    
-                    if powerup.power_type == 'rapid_fire':
-                        ship.rapid_fire = True
-                        ship.rapid_fire_timer = 300  # 5 seconds
-                    else:  # shield
-                        ship.shield = True
-                        ship.shield_timer = 300
-                    
-                    break
+            if powerup.check_collision_ship(ship):
+                powerups.remove(powerup)
+                powerup_sound.play()
+
+                if powerup.power_type == 'rapid_fire':
+                    ship.rapid_fire = True
+                    ship.rapid_fire_timer = 300  # 5 seconds
+                else:  # shield
+                    ship.shield = True
+                    ship.shield_timer = 300
+
+                break
         
         # New wave when all asteroids cleared
         if len(asteroids) == 0:
             wave += 1
             play_level_up_sound()  # Celebrate wave completion!
             asteroids = spawn_asteroids(4, 'large', wave)
-            
-            # Update ship references
-            ships[0] = active_ships[0]
-            if multiplayer:
-                ships[1] = active_ships[1]
     
     # Drawing
     screen.fill(current_scheme.bg)
@@ -1097,90 +1024,57 @@ while running:
         # Draw power-ups
         for powerup in powerups:
             powerup.draw(screen)
-        
-        # Draw ships
-        active_ships = [ships[0]]
-        if multiplayer:
-            active_ships.append(ships[1])
-        
-        for ship in active_ships:
-            ship.draw(screen)
+
+        # Draw ship
+        ship.draw(screen)
         
         # Draw scanlines and vignette
         draw_scanlines(screen)
         draw_vignette(screen)
         
         # Draw UI
-        # Player 1 (left side)
-        score_text = font.render(f'P1: {scores[0]}', True, current_scheme.primary)
+        score_text = font.render(f'Score: {score}', True, current_scheme.primary)
         screen.blit(score_text, (10, 10))
-        
-        lives_text = font.render(f'Lives: {lives[0]}', True, current_scheme.primary)
+
+        lives_text = font.render(f'Lives: {lives}', True, current_scheme.primary)
         screen.blit(lives_text, (10, 50))
-        
+
         # Wave
         wave_text = font.render(f'Wave: {wave}', True, current_scheme.primary)
         screen.blit(wave_text, (WIDTH//2 - 70, 10))
-        
+
         # Color scheme name
         scheme_text = small_font.render(f'{current_scheme.name}', True, current_scheme.dim)
         screen.blit(scheme_text, (WIDTH//2 - 70, 50))
-        
-        # Player 2 (right side) if multiplayer
-        if multiplayer:
-            p2_score = font.render(f'P2: {scores[1]}', True, current_scheme.bright)
-            screen.blit(p2_score, (WIDTH - 150, 10))
-            
-            p2_lives = font.render(f'Lives: {lives[1]}', True, current_scheme.bright)
-            screen.blit(p2_lives, (WIDTH - 150, 50))
-        
+
         # Power-up indicators
-        if ships[0].rapid_fire or (multiplayer and ships[1].rapid_fire):
+        if ship.rapid_fire:
             rapid_text = small_font.render('RAPID FIRE!', True, current_scheme.accent)
             screen.blit(rapid_text, (WIDTH//2 - 60, 75))
-        
-        if ships[0].shield or (multiplayer and ships[1].shield):
+
+        if ship.shield:
             shield_text = small_font.render('SHIELD!', True, current_scheme.accent)
             screen.blit(shield_text, (WIDTH//2 - 40, 100))
-        
+
         # Controls
-        if multiplayer:
-            controls = small_font.render('P1: Arrows+RCtrl+RShift | P2: WASD+LCtrl+LShift | M:Multi | C:Color', 
-                                       True, current_scheme.dim)
-        else:
-            controls = small_font.render('Arrows: Move | RCtrl: Shoot | RShift: Warp | M: Multi | C: Color', 
-                                       True, current_scheme.dim)
+        controls = small_font.render('Arrows: Move | RCtrl: Shoot | RShift: Warp | C: Color',
+                                   True, current_scheme.dim)
         screen.blit(controls, (10, HEIGHT - 30))
     
     else:
         # Game over screen
         draw_scanlines(screen)
         draw_vignette(screen)
-        
+
         game_over_text = large_font.render('GAME OVER', True, current_scheme.accent)
         screen.blit(game_over_text, (WIDTH//2 - 200, HEIGHT//2 - 100))
-        
-        if multiplayer:
-            if scores[0] > scores[1]:
-                winner_text = font.render('Player 1 Wins!', True, current_scheme.primary)
-            elif scores[1] > scores[0]:
-                winner_text = font.render('Player 2 Wins!', True, current_scheme.bright)
-            else:
-                winner_text = font.render('Tie!', True, current_scheme.accent)
-            screen.blit(winner_text, (WIDTH//2 - 100, HEIGHT//2 - 30))
-            
-            p1_final = font.render(f'P1 Score: {scores[0]}', True, current_scheme.primary)
-            screen.blit(p1_final, (WIDTH//2 - 120, HEIGHT//2 + 20))
-            
-            p2_final = font.render(f'P2 Score: {scores[1]}', True, current_scheme.bright)
-            screen.blit(p2_final, (WIDTH//2 - 120, HEIGHT//2 + 60))
-        else:
-            final_score = font.render(f'Final Score: {scores[0]}', True, current_scheme.primary)
-            screen.blit(final_score, (WIDTH//2 - 140, HEIGHT//2))
-            
-            final_wave = font.render(f'Wave Reached: {wave}', True, current_scheme.primary)
-            screen.blit(final_wave, (WIDTH//2 - 140, HEIGHT//2 + 50))
-        
+
+        final_score = font.render(f'Final Score: {score}', True, current_scheme.primary)
+        screen.blit(final_score, (WIDTH//2 - 140, HEIGHT//2))
+
+        final_wave = font.render(f'Wave Reached: {wave}', True, current_scheme.primary)
+        screen.blit(final_wave, (WIDTH//2 - 140, HEIGHT//2 + 50))
+
         restart_text = font.render('Press SPACE to restart', True, current_scheme.dim)
         screen.blit(restart_text, (WIDTH//2 - 170, HEIGHT//2 + 120))
     
