@@ -42,39 +42,44 @@ current_scheme = SCHEMES[current_scheme_index]
 try:
     # Laser sounds - we'll cycle through these
     laser_sounds = [
-        pygame.mixer.Sound('sounds/Retro_Laser_Shot_04.wav'),
-        pygame.mixer.Sound('sounds/Retro_Laser_Shot_05.wav'),
-        pygame.mixer.Sound('sounds/Retro_Laser_Shot_06.wav'),
+        pygame.mixer.Sound('sounds/retro-laser-shot-04.wav'),
+        pygame.mixer.Sound('sounds/retro-laser-shot-05.wav'),
+        pygame.mixer.Sound('sounds/retro-laser-shot-06.wav'),
         pygame.mixer.Sound('sounds/puny_laser.wav'),
     ]
     current_laser_index = 0
     
-    # Big laser for UFO
-    ufo_laser_sound = pygame.mixer.Sound('sounds/Big_Laser_Beam.wav')
+    # Big laser for UFO - try laser-element or fallback to first retro laser
+    try:
+        ufo_laser_sound = pygame.mixer.Sound('sounds/laser-element-only-2.wav')
+    except:
+        ufo_laser_sound = laser_sounds[0]  # Fallback to a regular laser
     
     # Explosion sounds - randomize for variety
     explosion_sounds = [
         pygame.mixer.Sound('sounds/explosion_asteroid.wav'),
         pygame.mixer.Sound('sounds/explosion_asteroid2.wav'),
-        pygame.mixer.Sound('sounds/Space_Explosion.wav'),
-        pygame.mixer.Sound('sounds/Asteroide_Pelicula_SFX.wav'),
+        pygame.mixer.Sound('sounds/space-explosion.wav'),
+        pygame.mixer.Sound('sounds/pelicula-sfx.wav'),
     ]
     
     # Achievement/Level up sounds
     achievement_sounds = [
-        pygame.mixer.Sound('sounds/Achievement.wav'),
-        pygame.mixer.Sound('sounds/Jingle_Achievement_00.wav'),
-        pygame.mixer.Sound('sounds/Jingle_Achievement_01.wav'),
+        pygame.mixer.Sound('sounds/achievement.wav'),
+        pygame.mixer.Sound('sounds/jingle_achievement_00.wav'),
+        pygame.mixer.Sound('sounds/jingle_achievement_01.wav'),
     ]
     
+    # Level up sounds - NOTE: These are MP3 files!
+    # pygame.mixer.Sound works with mp3 on most systems
     level_up_sounds = [
-        pygame.mixer.Sound('sounds/Level_Up_01.wav'),
-        pygame.mixer.Sound('sounds/Level_Up_02.wav'),
-        pygame.mixer.Sound('sounds/Level_Up_03.wav'),
+        pygame.mixer.Sound('sounds/level-up-01.mp3'),
+        pygame.mixer.Sound('sounds/level-up-02.mp3'),
+        pygame.mixer.Sound('sounds/level-up-03.mp3'),
     ]
     
     # Power-up/special sounds
-    powerup_sound = pygame.mixer.Sound('sounds/Magic_Reveal.wav')
+    powerup_sound = pygame.mixer.Sound('sounds/magic-reveal.wav')
     
     # Adjust volumes for balance
     for sound in laser_sounds:
@@ -331,18 +336,8 @@ class Ship:
             self.hyperspace_cooldown -= 1
     
     def draw(self, screen):
-        """Draw the ship as a triangle"""
+        """Draw the ship as a teardrop"""
         rad = math.radians(self.angle)
-        
-        # Calculate triangle points
-        nose_x = self.x + math.sin(rad) * self.radius
-        nose_y = self.y - math.cos(rad) * self.radius
-        
-        left_x = self.x + math.sin(rad - 2.5) * self.radius
-        left_y = self.y - math.cos(rad - 2.5) * self.radius
-        
-        right_x = self.x + math.sin(rad + 2.5) * self.radius
-        right_y = self.y - math.cos(rad + 2.5) * self.radius
         
         # Flicker when invulnerable
         if self.invulnerable and pygame.time.get_ticks() % 200 < 100:
@@ -360,9 +355,48 @@ class Ship:
         # Use primary color for main ship, bright for player 2 in multiplayer
         ship_color = current_scheme.bright if self.player_num == 2 else current_scheme.primary
         
-        # Draw ship
-        pygame.draw.polygon(screen, ship_color, 
-                          [(nose_x, nose_y), (left_x, left_y), (right_x, right_y)], 2)
+        # Create teardrop shape - pointed front, rounded back
+        # Define points around the teardrop in local coordinates
+        teardrop_points = []
+        
+        # Front point (sharp nose)
+        nose_length = self.radius * 1.2
+        
+        # Create smooth teardrop using multiple points
+        num_points = 12
+        for i in range(num_points):
+            # Angle around the back of the ship (from -150° to +150°)
+            angle_offset = math.pi * (i / (num_points - 1) - 0.5) * 1.67  # 1.67 gives us about 300°
+            
+            # Distance from center - creates the teardrop curve
+            # More distance at the back (angle_offset near 0), less at sides
+            curve_factor = abs(math.cos(angle_offset * 0.8))
+            distance = self.radius * 0.7 * (0.4 + 0.6 * curve_factor)
+            
+            # Calculate point in local coordinates (before rotation)
+            local_x = math.sin(angle_offset) * distance
+            local_y = -math.cos(angle_offset) * distance * 0.6  # Squash vertically
+            
+            # Rotate point based on ship's angle
+            rotated_x = local_x * math.cos(rad) - local_y * math.sin(rad)
+            rotated_y = local_x * math.sin(rad) + local_y * math.cos(rad)
+            
+            # Translate to ship position
+            teardrop_points.append((self.x + rotated_x, self.y + rotated_y))
+        
+        # Add the nose point at the front
+        nose_x = self.x + math.sin(rad) * nose_length
+        nose_y = self.y - math.cos(rad) * nose_length
+        teardrop_points.insert(num_points // 2, (nose_x, nose_y))
+        
+        # Draw the teardrop
+        pygame.draw.polygon(screen, ship_color, teardrop_points, 2)
+        
+        # Optional: Add a small thruster detail at the back when thrusting
+        if self.is_thrusting:
+            back_x = self.x - math.sin(rad) * self.radius * 0.5
+            back_y = self.y + math.cos(rad) * self.radius * 0.5
+            pygame.draw.circle(screen, current_scheme.accent, (int(back_x), int(back_y)), 3)
     
     def shoot(self):
         """Create a bullet"""
