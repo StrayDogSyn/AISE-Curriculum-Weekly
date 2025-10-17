@@ -175,14 +175,32 @@ class Particle:
             color = current_scheme.bright
         else:
             color = current_scheme.secondary
-        
+
         # Fade alpha based on lifetime
         alpha = int(255 * (self.lifetime / self.max_lifetime))
+
+        # Draw particle with glow effect for 16-bit style
+        if self.lifetime > self.max_lifetime * 0.5:
+            # Draw outer glow when fresh
+            glow_size = self.size + 2
+            glow_alpha = int(alpha * 0.4)
+            glow_color = (*color, glow_alpha)
+
+            glow_surf = pygame.Surface((glow_size * 2, glow_size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(glow_surf, glow_color, (glow_size, glow_size), glow_size)
+            screen.blit(glow_surf, (int(self.x - glow_size), int(self.y - glow_size)))
+
+        # Main particle with gradient
         color_with_alpha = (*color, alpha)
-        
-        # Create a surface with per-pixel alpha
         surf = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
         pygame.draw.circle(surf, color_with_alpha, (self.size, self.size), self.size)
+
+        # Add bright center
+        if self.size > 2:
+            bright_color = tuple(min(255, int(c * 1.5)) for c in color)
+            bright_alpha = int(alpha * 0.8)
+            pygame.draw.circle(surf, (*bright_color, bright_alpha), (self.size, self.size), self.size // 2)
+
         screen.blit(surf, (int(self.x - self.size), int(self.y - self.size)))
 
 
@@ -326,27 +344,35 @@ class Ship:
             self.hyperspace_cooldown -= 1
     
     def draw(self, screen):
-        """Draw the ship as a classic triangle"""
+        """Draw the ship with 3D shading"""
         rad = math.radians(self.angle)
 
         # Flicker when invulnerable
         if self.invulnerable and pygame.time.get_ticks() % 200 < 100:
             return
 
-        # Draw shield with animated pulse
+        # Draw shield with animated pulse and glow
         if self.shield:
             pulse = math.sin(pygame.time.get_ticks() * 0.005) * 3
-            shield_color = (*current_scheme.bright, 100)
-            surf = pygame.Surface((self.radius * 3, self.radius * 3), pygame.SRCALPHA)
-            pygame.draw.circle(surf, shield_color, (self.radius * 1.5, self.radius * 1.5),
-                             int(self.radius * 1.5 + pulse), 3)
-            screen.blit(surf, (int(self.x - self.radius * 1.5),
-                              int(self.y - self.radius * 1.5)))
+            shield_radius = int(self.radius * 1.5 + pulse)
+
+            # Multiple shield layers for depth
+            for layer in range(3, 0, -1):
+                alpha = int(80 / layer)
+                shield_color = (*current_scheme.bright, alpha)
+                surf = pygame.Surface((shield_radius * 2 + 20, shield_radius * 2 + 20), pygame.SRCALPHA)
+                pygame.draw.circle(surf, shield_color, (shield_radius + 10, shield_radius + 10),
+                                 shield_radius + layer * 2, 2)
+                screen.blit(surf, (int(self.x - shield_radius - 10),
+                                  int(self.y - shield_radius - 10)))
 
         # Use primary color for ship
         ship_color = current_scheme.primary
+        dark_color = tuple(int(c * 0.5) for c in ship_color)
+        light_color = tuple(min(255, int(c * 1.4)) for c in ship_color)
+        bright_color = tuple(min(255, int(c * 1.8)) for c in ship_color)
 
-        # Create classic triangle shape (like original Asteroids)
+        # Create classic triangle shape
         # Front point (nose)
         nose_x = self.x + math.sin(rad) * self.radius * 1.5
         nose_y = self.y - math.cos(rad) * self.radius * 1.5
@@ -361,10 +387,29 @@ class Ship:
         right_x = self.x + math.sin(right_angle) * self.radius
         right_y = self.y - math.cos(right_angle) * self.radius
 
-        # Draw the triangle
-        pygame.draw.polygon(screen, ship_color, [(nose_x, nose_y), (left_x, left_y), (right_x, right_y)], 2)
+        # Draw filled triangle with gradient effect
+        # Dark fill first
+        pygame.draw.polygon(screen, dark_color, [(nose_x, nose_y), (left_x, left_y), (right_x, right_y)], 0)
 
-        # Add thruster flame when thrusting
+        # Draw left side lighter (lit side)
+        mid_left_x = (nose_x + left_x) / 2
+        mid_left_y = (nose_y + left_y) / 2
+        back_x = (left_x + right_x) / 2
+        back_y = (left_y + right_y) / 2
+        pygame.draw.polygon(screen, ship_color, [(nose_x, nose_y), (mid_left_x, mid_left_y), (back_x, back_y)], 0)
+
+        # Draw bright highlight on top edge
+        pygame.draw.line(screen, bright_color, (nose_x, nose_y), (left_x, left_y), 2)
+
+        # Draw cockpit detail with glow
+        cockpit_x = self.x + math.sin(rad) * self.radius * 0.5
+        cockpit_y = self.y - math.cos(rad) * self.radius * 0.5
+        draw_glow_circle(screen, (cockpit_x, cockpit_y), 3, current_scheme.accent, intensity=0.8)
+
+        # Outline
+        pygame.draw.polygon(screen, light_color, [(nose_x, nose_y), (left_x, left_y), (right_x, right_y)], 2)
+
+        # Add thruster flame when thrusting with glow
         if self.is_thrusting:
             # Flame point at the back
             flame_length = self.radius * random.uniform(0.5, 0.8)
@@ -381,9 +426,17 @@ class Ship:
             right_flame_x = self.x + math.sin(right_flame_angle) * self.radius * 0.6
             right_flame_y = self.y - math.cos(right_flame_angle) * self.radius * 0.6
 
-            # Draw animated flame
+            # Draw flame glow
+            flame_center_x = (back_x + left_flame_x + right_flame_x) / 3
+            flame_center_y = (back_y + left_flame_y + right_flame_y) / 3
+            draw_glow_circle(screen, (flame_center_x, flame_center_y), 8, current_scheme.accent, intensity=1.5)
+
+            # Draw animated flame with gradient
+            flame_bright = tuple(min(255, int(c * 1.5)) for c in current_scheme.accent)
             pygame.draw.polygon(screen, current_scheme.accent,
                               [(back_x, back_y), (left_flame_x, left_flame_y), (right_flame_x, right_flame_y)], 0)
+            pygame.draw.polygon(screen, flame_bright,
+                              [(back_x, back_y), (left_flame_x, left_flame_y), (right_flame_x, right_flame_y)], 1)
     
     def shoot(self):
         """Create a bullet"""
@@ -429,7 +482,21 @@ class Bullet:
         return self.lifetime <= 0
     
     def draw(self, screen):
-        pygame.draw.circle(screen, current_scheme.accent, (int(self.x), int(self.y)), self.radius)
+        """Draw bullet with glow trail"""
+        # Draw glow effect
+        draw_glow_circle(screen, (self.x, self.y), self.radius, current_scheme.accent, intensity=1.2)
+
+        # Draw motion trail
+        trail_length = 3
+        for i in range(1, trail_length):
+            trail_x = self.x - self.vx * i * 0.5
+            trail_y = self.y - self.vy * i * 0.5
+            trail_alpha = int(100 * (1 - i / trail_length))
+            trail_color = (*current_scheme.accent, trail_alpha)
+
+            surf = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+            pygame.draw.circle(surf, trail_color, (self.radius, self.radius), self.radius)
+            screen.blit(surf, (int(trail_x - self.radius), int(trail_y - self.radius)))
 
 
 class Asteroid:
@@ -493,20 +560,74 @@ class Asteroid:
             self.y = 0
     
     def draw(self, screen):
-        """Draw as irregular polygon"""
+        """Draw as irregular polygon with 3D shading"""
         rad = math.radians(self.rotation)
-        
+
         # Rotate and translate polygon points
         points = []
         for px, py in self.polygon:
             # Rotate
             rotated_x = px * math.cos(rad) - py * math.sin(rad)
             rotated_y = px * math.sin(rad) + py * math.cos(rad)
-            
+
             # Translate to asteroid position
             points.append((self.x + rotated_x, self.y + rotated_y))
-        
-        pygame.draw.polygon(screen, current_scheme.secondary, points, 2)
+
+        # Create color variations for 3D effect
+        base_color = current_scheme.secondary
+        dark_color = tuple(int(c * 0.4) for c in base_color)
+        light_color = tuple(min(255, int(c * 1.3)) for c in base_color)
+        bright_color = tuple(min(255, int(c * 1.6)) for c in base_color)
+
+        # Fill with dark base
+        pygame.draw.polygon(screen, dark_color, points, 0)
+
+        # Add shading based on edge orientation
+        light_direction = (-0.5, -0.7)  # Light from top-left
+
+        for i in range(len(points)):
+            p1 = points[i]
+            p2 = points[(i + 1) % len(points)]
+
+            # Calculate edge normal
+            edge_dx = p2[0] - p1[0]
+            edge_dy = p2[1] - p1[1]
+            edge_len = math.sqrt(edge_dx**2 + edge_dy**2)
+
+            if edge_len > 0:
+                normal_x = -edge_dy / edge_len
+                normal_y = edge_dx / edge_len
+
+                # Dot product with light direction
+                light_amount = normal_x * light_direction[0] + normal_y * light_direction[1]
+
+                # Draw lit edges brighter
+                if light_amount > 0.4:
+                    pygame.draw.line(screen, bright_color, p1, p2, 3)
+                elif light_amount > 0:
+                    pygame.draw.line(screen, light_color, p1, p2, 2)
+
+        # Draw outline
+        pygame.draw.polygon(screen, base_color, points, 2)
+
+        # Add a few crater details for texture
+        if self.size in ['large', 'medium']:
+            num_craters = 2 if self.size == 'large' else 1
+            for i in range(num_craters):
+                crater_angle = (360 / num_craters) * i + self.rotation
+                crater_rad = math.radians(crater_angle)
+                crater_dist = self.radius * 0.5
+                crater_x = self.x + math.cos(crater_rad) * crater_dist
+                crater_y = self.y + math.sin(crater_rad) * crater_dist
+                crater_size = int(self.radius * 0.15)
+
+                # Dark crater
+                pygame.draw.circle(screen, dark_color, (int(crater_x), int(crater_y)), crater_size)
+                # Highlight on one edge
+                pygame.draw.arc(screen, light_color,
+                              (int(crater_x - crater_size), int(crater_y - crater_size),
+                               crater_size * 2, crater_size * 2),
+                              0, math.pi, 1)
     
     def split(self):
         """Create smaller asteroids"""
@@ -591,19 +712,72 @@ class UFO:
         return UFOBullet(self.x, self.y, vx, vy)
     
     def draw(self, screen):
-        """Draw classic UFO saucer shape"""
-        # Use bright color for UFO to make it stand out as dangerous
+        """Draw UFO with 3D shading and lighting"""
         ufo_color = current_scheme.bright
-        
-        # Top dome
-        pygame.draw.arc(screen, ufo_color, 
-                       (self.x - self.radius, self.y - self.radius//2, 
-                        self.radius * 2, self.radius), 
-                       0, math.pi, 2)
-        # Bottom saucer
-        pygame.draw.ellipse(screen, ufo_color,
-                          (self.x - self.radius, self.y - 5,
-                           self.radius * 2, 10), 2)
+        dark_color = tuple(int(c * 0.5) for c in ufo_color)
+        light_color = tuple(min(255, int(c * 1.3)) for c in ufo_color)
+
+        # Draw glow around UFO
+        for i in range(3, 0, -1):
+            glow_alpha = 30 * (4 - i) // 2
+            glow_color = (*ufo_color, glow_alpha)
+            glow_surf = pygame.Surface((self.radius * 2 + i * 4, self.radius * 2 + i * 4), pygame.SRCALPHA)
+            pygame.draw.ellipse(glow_surf, glow_color, (0, 0, self.radius * 2 + i * 4, self.radius * 2 + i * 4))
+            screen.blit(glow_surf, (int(self.x - self.radius - i * 2), int(self.y - self.radius - i * 2)))
+
+        # Draw bottom saucer (filled with gradient effect)
+        saucer_rect = (int(self.x - self.radius), int(self.y - 5), self.radius * 2, 10)
+
+        # Draw saucer in layers for 3D effect
+        for layer in range(5):
+            layer_height = 10 - layer * 2
+            layer_y = int(self.y - 5 + layer)
+            layer_width = int(self.radius * 2 * (1 - layer * 0.1))
+            layer_x = int(self.x - layer_width // 2)
+
+            color_factor = 0.5 + (layer / 5) * 0.5
+            layer_color = tuple(int(c * color_factor) for c in ufo_color)
+
+            pygame.draw.ellipse(screen, layer_color,
+                              (layer_x, layer_y, layer_width, layer_height), 0)
+
+        # Bright top edge of saucer
+        pygame.draw.ellipse(screen, light_color, saucer_rect, 2)
+
+        # Draw top dome with shading
+        dome_rect = (int(self.x - self.radius // 2), int(self.y - self.radius // 2),
+                     self.radius, self.radius)
+
+        # Dome base (dark)
+        pygame.draw.ellipse(screen, dark_color, dome_rect, 0)
+
+        # Dome highlight
+        highlight_rect = (int(self.x - self.radius // 3), int(self.y - self.radius // 2),
+                         int(self.radius * 0.6), int(self.radius * 0.6))
+        pygame.draw.ellipse(screen, ufo_color, highlight_rect, 0)
+
+        # Dome top shine
+        shine_rect = (int(self.x - self.radius // 4), int(self.y - self.radius // 2.5),
+                     int(self.radius * 0.3), int(self.radius * 0.3))
+        pygame.draw.ellipse(screen, light_color, shine_rect, 0)
+
+        # Dome outline
+        pygame.draw.arc(screen, light_color, dome_rect, 0, math.pi, 2)
+
+        # Add pulsing lights around the saucer
+        num_lights = 6
+        for i in range(num_lights):
+            angle = (360 / num_lights) * i + pygame.time.get_ticks() * 0.05
+            light_rad = math.radians(angle)
+            light_x = self.x + math.cos(light_rad) * self.radius * 0.8
+            light_y = self.y + math.sin(light_rad) * 5
+
+            # Pulsing effect with offset per light
+            pulse_offset = i * (math.pi * 2 / num_lights)
+            pulse = (math.sin(pygame.time.get_ticks() * 0.01 + pulse_offset) + 1) / 2
+
+            light_intensity = 0.5 + pulse * 0.5
+            draw_glow_circle(screen, (light_x, light_y), 2, current_scheme.accent, intensity=light_intensity)
     
     def check_collision_bullet(self, bullet):
         distance = math.sqrt((self.x - bullet.x)**2 + (self.y - bullet.y)**2)
@@ -615,9 +789,19 @@ class UFO:
 
 
 class UFOBullet(Bullet):
-    """UFO bullets look different"""
+    """UFO bullets look different with enhanced glow"""
     def draw(self, screen):
-        pygame.draw.circle(screen, current_scheme.bright, (int(self.x), int(self.y)), self.radius)
+        # Draw with brighter glow for danger
+        draw_glow_circle(screen, (self.x, self.y), self.radius, current_scheme.bright, intensity=1.5)
+
+        # Pulsing effect
+        pulse = math.sin(pygame.time.get_ticks() * 0.01) * 0.5 + 0.5
+        pulse_color = (*current_scheme.bright, int(150 * pulse))
+        pulse_radius = int(self.radius * (1.5 + pulse))
+
+        surf = pygame.Surface((pulse_radius * 2, pulse_radius * 2), pygame.SRCALPHA)
+        pygame.draw.circle(surf, pulse_color, (pulse_radius, pulse_radius), pulse_radius, 2)
+        screen.blit(surf, (int(self.x - pulse_radius), int(self.y - pulse_radius)))
 
 
 class PowerUp:
@@ -646,16 +830,49 @@ class PowerUp:
     def draw(self, screen):
         # Pulsing effect
         pulse_size = self.radius + math.sin(self.pulse) * 3
-        
+        pulse_intensity = (math.sin(self.pulse * 2) + 1) / 2
+
         # Use accent color for power-ups
         color = current_scheme.accent
-        
-        pygame.draw.circle(screen, color, 
-                         (int(self.x), int(self.y)), int(pulse_size), 2)
-        
-        # Draw letter in center
-        font = pygame.font.Font(None, 24)
-        text = font.render(self.symbol, True, color)
+        dark_color = tuple(int(c * 0.5) for c in color)
+        bright_color = tuple(min(255, int(c * 1.5)) for c in color)
+
+        # Draw glowing aura
+        for i in range(3, 0, -1):
+            aura_size = int(pulse_size + i * 4)
+            aura_alpha = int(40 * pulse_intensity * (4 - i) / 3)
+            aura_color = (*color, aura_alpha)
+
+            aura_surf = pygame.Surface((aura_size * 2, aura_size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(aura_surf, aura_color, (aura_size, aura_size), aura_size)
+            screen.blit(aura_surf, (int(self.x - aura_size), int(self.y - aura_size)))
+
+        # Draw 3D circle with gradient
+        # Dark base
+        pygame.draw.circle(screen, dark_color, (int(self.x), int(self.y)), int(pulse_size), 0)
+
+        # Mid layer
+        mid_size = int(pulse_size * 0.7)
+        pygame.draw.circle(screen, color, (int(self.x), int(self.y)), mid_size, 0)
+
+        # Bright center highlight
+        highlight_size = int(pulse_size * 0.4)
+        highlight_offset = int(pulse_size * 0.2)
+        pygame.draw.circle(screen, bright_color,
+                         (int(self.x - highlight_offset), int(self.y - highlight_offset)),
+                         highlight_size, 0)
+
+        # Outer ring
+        pygame.draw.circle(screen, bright_color, (int(self.x), int(self.y)), int(pulse_size), 2)
+
+        # Draw letter in center with shadow
+        font = pygame.font.Font(None, 28)
+        # Shadow
+        shadow_text = font.render(self.symbol, True, (0, 0, 0))
+        shadow_rect = shadow_text.get_rect(center=(int(self.x + 1), int(self.y + 1)))
+        screen.blit(shadow_text, shadow_rect)
+        # Main text
+        text = font.render(self.symbol, True, bright_color)
         text_rect = text.get_rect(center=(int(self.x), int(self.y)))
         screen.blit(text, text_rect)
     
@@ -683,20 +900,67 @@ def spawn_asteroids(count, size='large', wave=1):
 
 
 def draw_grid_background(screen):
-    """Draw matrix-style grid background"""
-    grid_color = (*current_scheme.dim, 30)  # Very transparent
-    
-    # Vertical lines
-    for x in range(0, WIDTH, 40):
-        surf = pygame.Surface((1, HEIGHT), pygame.SRCALPHA)
-        surf.fill(grid_color)
-        screen.blit(surf, (x, 0))
-    
-    # Horizontal lines
-    for y in range(0, HEIGHT, 40):
-        surf = pygame.Surface((WIDTH, 1), pygame.SRCALPHA)
-        surf.fill(grid_color)
-        screen.blit(surf, (0, y))
+    """Draw enhanced grid with depth layers"""
+    # Draw multiple layers of grids with different sizes for depth
+    layers = [
+        {'spacing': 80, 'alpha': 15, 'offset': pygame.time.get_ticks() * 0.005},
+        {'spacing': 40, 'alpha': 25, 'offset': pygame.time.get_ticks() * 0.01},
+        {'spacing': 20, 'alpha': 35, 'offset': pygame.time.get_ticks() * 0.015},
+    ]
+
+    for layer in layers:
+        spacing = layer['spacing']
+        alpha = layer['alpha']
+        offset = layer['offset'] % spacing
+
+        grid_color = (*current_scheme.dim, alpha)
+
+        # Vertical lines with parallax
+        for x in range(0, WIDTH + spacing, spacing):
+            adjusted_x = int((x - offset) % WIDTH)
+            surf = pygame.Surface((1, HEIGHT), pygame.SRCALPHA)
+            surf.fill(grid_color)
+            screen.blit(surf, (adjusted_x, 0))
+
+        # Horizontal lines with parallax
+        for y in range(0, HEIGHT + spacing, spacing):
+            adjusted_y = int((y - offset) % HEIGHT)
+            surf = pygame.Surface((WIDTH, 1), pygame.SRCALPHA)
+            surf.fill(grid_color)
+            screen.blit(surf, (0, adjusted_y))
+
+
+# Create starfield for background depth
+class Star:
+    def __init__(self):
+        self.x = random.randint(0, WIDTH)
+        self.y = random.randint(0, HEIGHT)
+        self.size = random.randint(1, 3)
+        self.brightness = random.uniform(0.3, 1.0)
+        self.twinkle_speed = random.uniform(0.001, 0.003)
+        self.twinkle_offset = random.uniform(0, math.pi * 2)
+
+    def draw(self, screen):
+        # Twinkling effect
+        twinkle = (math.sin(pygame.time.get_ticks() * self.twinkle_speed + self.twinkle_offset) + 1) / 2
+        current_brightness = self.brightness * (0.5 + twinkle * 0.5)
+
+        color = tuple(int(c * current_brightness) for c in current_scheme.dim)
+        bright_color = tuple(min(255, int(c * current_brightness * 1.5)) for c in current_scheme.primary)
+
+        if self.size == 1:
+            pygame.draw.circle(screen, color, (int(self.x), int(self.y)), 1)
+        elif self.size == 2:
+            draw_glow_circle(screen, (self.x, self.y), 1, color, intensity=0.3)
+        else:  # size == 3, bigger star with cross pattern
+            pygame.draw.circle(screen, bright_color, (int(self.x), int(self.y)), 1)
+            # Cross pattern
+            pygame.draw.line(screen, color, (self.x - 2, self.y), (self.x + 2, self.y), 1)
+            pygame.draw.line(screen, color, (self.x, self.y - 2), (self.x, self.y + 2), 1)
+
+
+# Generate starfield
+stars = [Star() for _ in range(150)]
 
 
 def draw_scanlines(screen):
@@ -742,29 +1006,68 @@ def cycle_color_scheme():
 
 
 def draw_terminal_panel(screen, x, y, width, height, border_color, fill_alpha=40):
-    """Draw a modern terminal-style panel with border and semi-transparent fill"""
-    # Create semi-transparent background
+    """Draw a 16-bit style panel with gradient and depth"""
     panel_surf = pygame.Surface((width, height), pygame.SRCALPHA)
-    bg_color = (*current_scheme.bg, fill_alpha)
-    panel_surf.fill(bg_color)
 
-    # Draw border with slight glow effect
+    # Create gradient background (darker at bottom, lighter at top for 3D effect)
+    for i in range(height):
+        gradient_factor = i / height
+        # Darker at bottom
+        alpha_mod = fill_alpha + int(20 * (1 - gradient_factor))
+        gradient_color = tuple(int(c * (0.8 + 0.2 * (1 - gradient_factor))) for c in current_scheme.bg)
+        bg_color = (*gradient_color, min(255, alpha_mod))
+        pygame.draw.line(panel_surf, bg_color, (2, i), (width - 2, i))
+
+    # Draw inner shadow for depth (top and left)
+    shadow_color = (0, 0, 0, 80)
+    for offset in range(3):
+        alpha = 80 - offset * 20
+        shadow = (0, 0, 0, alpha)
+        pygame.draw.line(panel_surf, shadow, (offset + 2, offset + 2), (width - offset - 2, offset + 2))
+        pygame.draw.line(panel_surf, shadow, (offset + 2, offset + 2), (offset + 2, height - offset - 2))
+
+    # Draw highlight (bottom and right edges) for 16-bit beveled look
+    highlight_color = tuple(min(255, int(c * 1.3)) for c in border_color)
+    for offset in range(2):
+        alpha = 150 - offset * 50
+        highlight = (*highlight_color, alpha)
+        pygame.draw.line(panel_surf, highlight, (offset + 2, height - offset - 2), (width - offset - 2, height - offset - 2))
+        pygame.draw.line(panel_surf, highlight, (width - offset - 2, offset + 2), (width - offset - 2, height - offset - 2))
+
+    # Main border with glow
+    # Outer glow
+    for glow_offset in range(2, 0, -1):
+        glow_alpha = 30 * (3 - glow_offset)
+        glow_color = (*border_color, glow_alpha)
+        glow_rect = (-glow_offset, -glow_offset, width + glow_offset * 2, height + glow_offset * 2)
+        pygame.draw.rect(panel_surf, glow_color, glow_rect, 1)
+
+    # Main border
     pygame.draw.rect(panel_surf, border_color, (0, 0, width, height), 2)
 
-    # Draw corner accents
-    corner_size = 8
+    # Draw corner accents with glow
+    corner_size = 10
+    accent_bright = tuple(min(255, int(c * 1.5)) for c in border_color)
+
     # Top-left
-    pygame.draw.line(panel_surf, border_color, (0, corner_size), (0, 0), 3)
-    pygame.draw.line(panel_surf, border_color, (0, 0), (corner_size, 0), 3)
+    pygame.draw.line(panel_surf, accent_bright, (0, corner_size), (0, 0), 3)
+    pygame.draw.line(panel_surf, accent_bright, (0, 0), (corner_size, 0), 3)
+    pygame.draw.circle(panel_surf, (*accent_bright, 100), (corner_size // 2, corner_size // 2), corner_size // 2)
+
     # Top-right
-    pygame.draw.line(panel_surf, border_color, (width - corner_size, 0), (width - 1, 0), 3)
-    pygame.draw.line(panel_surf, border_color, (width - 1, 0), (width - 1, corner_size), 3)
+    pygame.draw.line(panel_surf, accent_bright, (width - corner_size, 0), (width - 1, 0), 3)
+    pygame.draw.line(panel_surf, accent_bright, (width - 1, 0), (width - 1, corner_size), 3)
+    pygame.draw.circle(panel_surf, (*accent_bright, 100), (width - corner_size // 2, corner_size // 2), corner_size // 2)
+
     # Bottom-left
-    pygame.draw.line(panel_surf, border_color, (0, height - corner_size), (0, height - 1), 3)
-    pygame.draw.line(panel_surf, border_color, (0, height - 1), (corner_size, height - 1), 3)
+    pygame.draw.line(panel_surf, accent_bright, (0, height - corner_size), (0, height - 1), 3)
+    pygame.draw.line(panel_surf, accent_bright, (0, height - 1), (corner_size, height - 1), 3)
+    pygame.draw.circle(panel_surf, (*accent_bright, 100), (corner_size // 2, height - corner_size // 2), corner_size // 2)
+
     # Bottom-right
-    pygame.draw.line(panel_surf, border_color, (width - corner_size, height - 1), (width - 1, height - 1), 3)
-    pygame.draw.line(panel_surf, border_color, (width - 1, height - corner_size), (width - 1, height - 1), 3)
+    pygame.draw.line(panel_surf, accent_bright, (width - corner_size, height - 1), (width - 1, height - 1), 3)
+    pygame.draw.line(panel_surf, accent_bright, (width - 1, height - corner_size), (width - 1, height - 1), 3)
+    pygame.draw.circle(panel_surf, (*accent_bright, 100), (width - corner_size // 2, height - corner_size // 2), corner_size // 2)
 
     screen.blit(panel_surf, (x, y))
 
@@ -778,6 +1081,71 @@ def draw_text_with_shadow(screen, text, font, x, y, color, shadow_offset=2):
     text_surf = font.render(text, True, color)
     screen.blit(text_surf, (x, y))
     return text_surf.get_width()
+
+
+def interpolate_color(color1, color2, t):
+    """Interpolate between two colors (t = 0 to 1)"""
+    return tuple(int(c1 + (c2 - c1) * t) for c1, c2 in zip(color1, color2))
+
+
+def draw_gradient_polygon(screen, points, base_color, light_direction=(0.5, -0.7)):
+    """Draw a polygon with gradient shading for 3D effect"""
+    # Calculate polygon center
+    center_x = sum(p[0] for p in points) / len(points)
+    center_y = sum(p[1] for p in points) / len(points)
+
+    # Create lighter and darker versions of the base color
+    light_color = tuple(min(255, int(c * 1.5)) for c in base_color)
+    dark_color = tuple(int(c * 0.4) for c in base_color)
+
+    # Draw filled polygon with base color
+    pygame.draw.polygon(screen, base_color, points, 0)
+
+    # Draw highlight edge
+    highlight_points = []
+    for i in range(len(points)):
+        p1 = points[i]
+        p2 = points[(i + 1) % len(points)]
+
+        # Calculate edge normal
+        edge_dx = p2[0] - p1[0]
+        edge_dy = p2[1] - p1[1]
+        edge_len = math.sqrt(edge_dx**2 + edge_dy**2)
+        if edge_len > 0:
+            normal_x = -edge_dy / edge_len
+            normal_y = edge_dx / edge_len
+
+            # Dot product with light direction
+            light_amount = normal_x * light_direction[0] + normal_y * light_direction[1]
+
+            # Draw highlight on lit edges
+            if light_amount > 0.3:
+                pygame.draw.line(screen, light_color, p1, p2, 2)
+
+    # Draw outline
+    pygame.draw.polygon(screen, light_color, points, 2)
+
+
+def draw_glow_circle(screen, pos, radius, color, intensity=1.0):
+    """Draw a circle with outer glow for 16-bit style effect"""
+    x, y = int(pos[0]), int(pos[1])
+
+    # Draw multiple circles with decreasing alpha for glow
+    for i in range(3, 0, -1):
+        glow_radius = radius + i * 3
+        alpha = int(60 * intensity * (i / 3))
+        glow_color = (*color, alpha)
+
+        surf = pygame.Surface((glow_radius * 2, glow_radius * 2), pygame.SRCALPHA)
+        pygame.draw.circle(surf, glow_color, (glow_radius, glow_radius), glow_radius)
+        screen.blit(surf, (x - glow_radius, y - glow_radius))
+
+    # Draw solid core
+    pygame.draw.circle(screen, color, (x, y), radius)
+
+    # Add highlight
+    highlight_color = tuple(min(255, int(c * 1.5)) for c in color)
+    pygame.draw.circle(screen, highlight_color, (x - radius//3, y - radius//3), max(1, radius//3))
 
 
 def create_explosion(x, y, particles, color_type='accent'):
@@ -1046,10 +1414,14 @@ while running:
     
     # Drawing
     screen.fill(current_scheme.bg)
-    
+
+    # Draw starfield for depth
+    for star in stars:
+        star.draw(screen)
+
     # Draw terminal effects
     draw_grid_background(screen)
-    
+
     if not game_over:
         # Draw particles first (background layer)
         for particle in particles:
