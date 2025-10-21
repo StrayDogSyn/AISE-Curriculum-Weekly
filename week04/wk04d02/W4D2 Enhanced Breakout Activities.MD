@@ -262,19 +262,43 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-### Testing Your API
+### Testing Your ML API
 
-1. **Start the server**: `python main.py`
-2. **Visit documentation**: <http://localhost:8000/docs>
-3. **Test each endpoint**:
-   - GET /me - See your info
-   - PUT /me - Update your info
-   - GET /hobbies - List all hobbies
-   - GET /hobbies?skill_level=beginner - Filter hobbies
-   - POST /hobbies - Add a new hobby
-   - GET /hobbies/1 - Get specific hobby
-   - PUT /hobbies/1 - Update a hobby
-   - DELETE /hobbies/1 - Delete hobby
+1. **Test authentication**:
+
+   ```bash
+   # Should fail (no auth)
+   curl http://localhost:8000/v1/models
+   
+   # Should succeed
+   curl -H "Authorization: Bearer demo_key_123" \
+        http://localhost:8000/v1/models
+   ```
+
+1. **Train a model**:
+
+   ```bash
+   curl -X POST http://localhost:8000/v1/models/train \
+        -H "Authorization: Bearer demo_key_123" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "model_type": "random_forest",
+          "dataset_name": "test_data",
+          "training_strategy": "standard"
+        }'
+   ```
+
+1. **Make predictions**:
+
+   ```bash
+   curl -X POST http://localhost:8000/v1/models/MODEL_ID/predict \
+        -H "Authorization: Bearer demo_key_123" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "model_id": "MODEL_ID",
+          "features": [[1.0, 2.0, 3.0, 4.0, 5.0]]
+        }'
+   ```
 
 ### Challenge Extensions
 
@@ -318,7 +342,7 @@ Build a complete **ML Model API System** that:
 
 ### System Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │           FastAPI Application                    │
 │                                                  │
@@ -340,7 +364,7 @@ Build a complete **ML Model API System** that:
 └─────────────────────────────────────────────────┘
 ```
 
-### Starter Code Template
+### Starter Code Template (Activity 2)
 
 ```python
 from fastapi import FastAPI, HTTPException, Depends, status
@@ -694,20 +718,21 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-### Testing Your ML API
+### Testing Your ML API (Activity 2)
 
-1. **Test authentication**:
-   ```bash
 1. **Test authentication**:
 
    ```bash
    # Should fail (no auth)
-   curl http://localhost:8000/v1/models   # Should succeed
+   curl http://localhost:8000/v1/models
+   
+   # Should succeed
    curl -H "Authorization: Bearer demo_key_123" \
         http://localhost:8000/v1/models
    ```
 
-2. **Train a model**:
+1. **Train a model**:
+
    ```bash
    curl -X POST http://localhost:8000/v1/models/train \
         -H "Authorization: Bearer demo_key_123" \
@@ -719,7 +744,8 @@ if __name__ == "__main__":
         }'
    ```
 
-3. **Make predictions**:
+1. **Make predictions**:
+
    ```bash
    curl -X POST http://localhost:8000/v1/models/MODEL_ID/predict \
         -H "Authorization: Bearer demo_key_123" \
