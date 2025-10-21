@@ -1,0 +1,14 @@
+# W4D2 Breakout Activities - Requirements
+# FastAPI and dependencies for building REST APIs
+
+# Core framework
+fastapi==0.104.1
+
+# ASGI server for running FastAPI
+uvicorn[standard]==0.24.0
+
+# Data validation and settings management
+pydantic==2.5.0
+
+# Optional: For enhanced development experience
+python-multipart==0.0.6  # For form data and file uploads
