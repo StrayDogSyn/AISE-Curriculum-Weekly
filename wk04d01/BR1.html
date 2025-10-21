@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakout 1 Student Guide</title>
+    <style>
+        @media print {
+            @page { margin: 0.5in; }
+            body { font-size: 11pt; }
+            .no-print { display: none; }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.3em;
+        }
+        
+        .header .meta {
+            color: #95a5a6;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        
+        .objective-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .objective-box h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+        }
+        
+        .objective-box p {
+            margin: 0;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+        
+        .instructions {
+            background: #e8f5e9;
+            border-left: 5px solid #2ecc71;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #27ae60;
+        }
+        
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+        
+        .pattern-quick-ref {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .pattern-quick-ref h3 {
+            margin-top: 0;
+            color: #856404;
+            text-align: center;
+        }
+        
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .pattern-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .pattern-card.factory { border-left-color: #3498db; }
+        .pattern-card.strategy { border-left-color: #e74c3c; }
+        .pattern-card.observer { border-left-color: #2ecc71; }
+        .pattern-card.singleton { border-left-color: #f39c12; }
+        
+        .pattern-icon {
+            font-size: 2em;
+            margin-right: 10px;
+        }
+        
+        .pattern-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+        
+        .pattern-hint {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .scenario {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            page-break-inside: avoid;
+        }
+        
+        .scenario-header {
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: -25px -25px 20px -25px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .scenario-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .code-example {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .problem-text {
+            background: #ffebee;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .problem-text strong {
+            color: #c0392b;
+        }
+        
+        .worksheet {
+            background: #e3f2fd;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .worksheet h4 {
+            margin-top: 0;
+            color: #2980b9;
+            font-size: 1.3em;
+        }
+        
+        .worksheet-item {
+            margin: 15px 0;
+        }
+        
+        .worksheet-label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .answer-box {
+            background: white;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            padding: 10px;
+            min-height: 60px;
+            margin-top: 5px;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .checkbox-item {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+        
+        .checkbox-item input {
+            margin-right: 8px;
+        }
+        
+        .tips {
+            background: #e8f5e9;
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .tips h4 {
+            margin-top: 0;
+            color: #27ae60;
+        }
+        
+        .tips ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .tips li {
+            margin: 5px 0;
+        }
+        
+        .discussion-questions {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .discussion-questions h3 {
+            margin-top: 0;
+            color: #7b1fa2;
+        }
+        
+        .discussion-questions ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .discussion-questions li {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .pattern-grid, .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Breakout Exercise 1</h1>
+            <div class="subtitle">Design Pattern Recognition Challenge</div>
+            <div class="meta">Week 4, Day 1 | Time: 15 minutes | Group Activity</div>
+        </div>
+        
+        <div class="objective-box">
+            <h2>🎯 Your Mission</h2>
+            <p>Read each real-world scenario and identify: <strong>What's the problem? Which design pattern solves it? Why?</strong></p>
+            <p style="margin-top: 10px;">No coding required - focus on understanding which pattern fits which problem!</p>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How to Complete This Exercise</h3>
+            <ol>
+                <li><strong>Form groups of 3-4 students</strong> in your breakout room</li>
+                <li><strong>Read each scenario carefully</strong> - understand the problem first</li>
+                <li><strong>Discuss as a group:</strong>
+                    <ul>
+                        <li>What's the core problem being described?</li>
+                        <li>Which pattern would help solve it?</li>
+                        <li>Why is that pattern the right choice?</li>
+                    </ul>
+                </li>
+                <li><strong>Fill out the worksheet</strong> for each scenario</li>
+                <li><strong>Be ready to share</strong> your reasoning with the class</li>
+            </ol>
+        </div>
+        
+        <div class="pattern-quick-ref">
+            <h3>🔍 Quick Pattern Reference</h3>
+            <div class="pattern-grid">
+                <div class="pattern-card factory">
+                    <div>
+                        <span class="pattern-icon">🏭</span>
+                        <span class="pattern-name">Factory</span>
+                    </div>
+                    <div class="pattern-hint">Creates different types of things</div>
+                </div>
+                <div class="pattern-card strategy">
+                    <div>
+                        <span class="pattern-icon">🔄</span>
+                        <span class="pattern-name">Strategy</span>
+                    </div>
+                    <div class="pattern-hint">Switches between different methods</div>
+                </div>
+                <div class="pattern-card observer">
+                    <div>
+                        <span class="pattern-icon">📢</span>
+                        <span class="pattern-name">Observer</span>
+                    </div>
+                    <div class="pattern-hint">Notifies multiple listeners</div>
+                </div>
+                <div class="pattern-card singleton">
+                    <div>
+                        <span class="pattern-icon">⭐</span>
+                        <span class="pattern-name">Singleton</span>
+                    </div>
+                    <div class="pattern-hint">Ensures only one instance</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SCENARIO 1 -->
+        <div class="scenario">
+            <div class="scenario-header">
+                Scenario 1: The Smartphone Production Line 📱
+            </div>
+            
+            <div class="scenario-content">
+                <p><strong>The Situation:</strong></p>
+                <p>TechCo manufactures smartphones. Their production system code looks like this:</p>
+                
+                <div class="code-example">
+def manufacture_phone(model_name):
+    if model_name == "budget_basic":
+        screen = "LCD 5.5 inch"
+        camera = "8MP single"
+        processor = "Quad-core 2.0GHz"
+        memory = "32GB"
+        # 15 lines of assembly code...
+    elif model_name == "mid_range":
+        screen = "OLED 6.1 inch"
+        camera = "48MP dual"
+        processor = "Octa-core 2.4GHz"
+        memory = "128GB"
+        # 15 lines of assembly code...
+    elif model_name == "flagship_pro":
+        screen = "AMOLED 6.7 inch"
+        camera = "108MP triple with telephoto"
+        processor = "Snapdragon 888"
+        memory = "512GB"
+        # 20 lines of assembly code...
+    # ... 12 more phone models
+                </div>
+                
+                <div class="problem-text">
+                    <strong>Problem:</strong> Every time TechCo releases a new phone model (quarterly!), engineers must modify this massive production function. The function is now 800+ lines long. Different assembly lines need different phone configurations, but they all go through this one gigantic if/else chain. Adding the new "gaming edition" model means scrolling through all existing models and hoping nothing breaks.
+                </div>
+            </div>
+            
+            <div class="worksheet">
+                <h4>📝 Your Analysis</h4>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">1. What's the core problem TechCo faces with their production system?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">2. Which design pattern would help?</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario1" value="factory">
+                            <span>🏭 Factory Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario1" value="strategy">
+                            <span>🔄 Strategy Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario1" value="observer">
+                            <span>📢 Observer Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario1" value="singleton">
+                            <span>⭐ Singleton Pattern</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">3. Why is that pattern the right choice?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tips">
+                <h4>💡 Discussion Tips</h4>
+                <ul>
+                    <li>Think about: Is this about <em>creating</em> different products, <em>switching</em> behaviors, <em>notifying</em> systems, or <em>sharing</em> one instance?</li>
+                    <li>Consider: What makes adding new phone models so painful?</li>
+                    <li>Ask: How could you organize phone creation to avoid this massive function?</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- SCENARIO 2 -->
+        <div class="scenario">
+            <div class="scenario-header">
+                Scenario 2: The Package Shipping Chaos 📦
+            </div>
+            
+            <div class="scenario-content">
+                <p><strong>The Situation:</strong></p>
+                <p>ShipFast provides multiple shipping options. Their cost calculation system looks like this:</p>
+                
+                <div class="code-example">
+def calculate_shipping(package_weight, method):
+    if method == "ground":
+        if package_weight < 5:
+            cost = package_weight * 2.50
+        else:
+            cost = package_weight * 2.00
+        days = 7
+        tracking = False
+    elif method == "express":
+        if package_weight < 5:
+            cost = package_weight * 8.00
+        else:
+            cost = package_weight * 7.50
+        days = 3
+        tracking = True
+    elif method == "overnight":
+        cost = package_weight * 15.00 + 10.00
+        days = 1
+        tracking = True
+        signature = True
+    # ... more shipping methods
+    return cost, days
+                </div>
+                
+                <div class="problem-text">
+                    <strong>Problem:</strong> Customers want to compare shipping options in real-time and switch between them easily. ShipFast wants to add "weekend delivery" and "drone delivery" options, but the calculation logic is rigid. During checkout, users should be able to switch between shipping methods dynamically, but the current code makes this difficult. Each shipping method has different pricing rules, delivery times, and features, but they're all jumbled together.
+                </div>
+            </div>
+            
+            <div class="worksheet">
+                <h4>📝 Your Analysis</h4>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">1. What flexibility is ShipFast's system missing?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">2. Which design pattern would help?</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario2" value="factory">
+                            <span>🏭 Factory Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario2" value="strategy">
+                            <span>🔄 Strategy Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario2" value="observer">
+                            <span>📢 Observer Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario2" value="singleton">
+                            <span>⭐ Singleton Pattern</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">3. How would this pattern let users switch shipping methods easily?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tips">
+                <h4>💡 Discussion Tips</h4>
+                <ul>
+                    <li>Key word: "switch" between different shipping methods</li>
+                    <li>Think: Same goal (ship package), different approaches (ground, express, overnight)</li>
+                    <li>Consider: What if each shipping method was its own independent calculation?</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- SCENARIO 3 -->
+        <div class="scenario">
+            <div class="scenario-header">
+                Scenario 3: The Smart Home Security Alert 🏠
+            </div>
+            
+            <div class="scenario-content">
+                <p><strong>The Situation:</strong></p>
+                <p>Sarah has a smart home security system. When a motion sensor detects movement, she needs multiple systems to respond:</p>
+                <ul style="margin: 10px 0; padding-left: 25px;">
+                    <li>Turn on outdoor lights</li>
+                    <li>Start recording on all cameras</li>
+                    <li>Send alert to her phone</li>
+                    <li>Send alert to her husband's phone</li>
+                    <li>Log the event in the security database</li>
+                    <li>If nighttime: trigger alarm</li>
+                </ul>
+                
+                <p>Her current code:</p>
+                
+                <div class="code-example">
+def motion_detected(sensor_id, location):
+    # Turn on lights
+    light_system.turn_on_outdoor()
+    
+    # Start all cameras
+    camera1.start_recording()
+    camera2.start_recording()
+    camera3.start_recording()
+    camera4.start_recording()
+    
+    # Send alerts
+    phone_app.send_alert_sarah()
+    phone_app.send_alert_husband()
+    
+    # Log it
+    database.log_motion_event()
+    
+    # Check time and trigger alarm
+    if is_nighttime():
+        alarm_system.trigger()
+    
+    # Want to add smartwatch alerts? Modify this function!
+    # Want daughter to get alerts? Modify this function!
+                </div>
+                
+                <div class="problem-text">
+                    <strong>Problem:</strong> Every time Sarah wants to add or remove an alert destination, she modifies this core motion detection function. She wants to add her smartwatch, her daughter's phone, and her smart doorbell to the alert system. She also wants her neighbor to get alerts when she's on vacation. But each addition means changing this critical security function - one mistake could disable the entire system!
+                </div>
+            </div>
+            
+            <div class="worksheet">
+                <h4>📝 Your Analysis</h4>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">1. What's fragile and hard to maintain about Sarah's security system?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">2. Which design pattern would help?</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario3" value="factory">
+                            <span>🏭 Factory Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario3" value="strategy">
+                            <span>🔄 Strategy Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario3" value="observer">
+                            <span>📢 Observer Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario3" value="singleton">
+                            <span>⭐ Singleton Pattern</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">3. How could devices "subscribe" to motion detection events?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tips">
+                <h4>💡 Discussion Tips</h4>
+                <ul>
+                    <li>Think about: One event (motion detected) → Many responses (lights, cameras, alerts)</li>
+                    <li>Key insight: Motion sensor shouldn't know about every alert destination</li>
+                    <li>Consider: How do fire alarms work? One trigger, multiple alarms respond</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- SCENARIO 4 -->
+        <div class="scenario">
+            <div class="scenario-header">
+                Scenario 4: The Online Shopping Cart Disaster 🛒
+            </div>
+            
+            <div class="scenario-content">
+                <p><strong>The Situation:</strong></p>
+                <p>EcomSite has an online store. They have a ShoppingCart class for user purchases:</p>
+                
+                <div class="code-example">
+# In product_page.py
+cart1 = ShoppingCart()
+cart1.add_item("Laptop", 999.99)
+
+# In checkout.py
+cart2 = ShoppingCart()  # Creates NEW cart!
+cart2.add_item("Mouse", 29.99)
+
+# In header.py (showing cart count)
+cart3 = ShoppingCart()  # Another NEW cart!
+item_count = cart3.get_item_count()  # Shows 0!
+
+# User sees: 0 items in cart indicator
+# But they added a laptop!
+# Cart contents don't sync across pages!
+                </div>
+                
+                <div class="problem-text">
+                    <strong>Problem:</strong> Every page component creates its own ShoppingCart instance. When a user adds an item on the product page, the cart indicator in the header still shows 0 items. When they go to checkout, their cart appears empty! The cart contents aren't shared across the application. Users add items but then can't find them at checkout. Customer support is flooded with "my cart is empty!" complaints.
+                </div>
+            </div>
+            
+            <div class="worksheet">
+                <h4>📝 Your Analysis</h4>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">1. Why don't cart contents sync across EcomSite's pages?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">2. Which design pattern would help?</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario4" value="factory">
+                            <span>🏭 Factory Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario4" value="strategy">
+                            <span>🔄 Strategy Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario4" value="observer">
+                            <span>📢 Observer Pattern</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="scenario4" value="singleton">
+                            <span>⭐ Singleton Pattern</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="worksheet-item">
+                    <div class="worksheet-label">3. What if there was only ONE shopping cart for the entire session?</div>
+                    <div class="answer-box" contenteditable="true">
+                        <!-- Students type here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tips">
+                <h4>💡 Discussion Tips</h4>
+                <ul>
+                    <li>Think about: Multiple cart instances vs. one shared cart instance</li>
+                    <li>Key problem: cart1, cart2, and cart3 are completely different objects</li>
+                    <li>Consider: What if every part of the app referenced the SAME cart?</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- DISCUSSION QUESTIONS -->
+        <div class="discussion-questions">
+            <h3>💬 Group Discussion Questions</h3>
+            <p>After completing all four scenarios, discuss these questions as a group:</p>
+            <ol>
+                <li>Which scenario was easiest to identify? Why?</li>
+                <li>Which scenario was hardest? What made it tricky?</li>
+                <li>What's the key difference between Factory and Strategy?</li>
+                <li>Can you think of an app you use daily that might use these patterns?</li>
+                <li>When might using a pattern make things MORE complicated instead of simpler?</li>
+            </ol>
+        </div>
+        
+        <!-- QUICK ANSWERS SECTION -->
+        <div style="background: #ecf0f1; padding: 20px; border-radius: 10px; margin-top: 30px; page-break-before: always;">
+            <h3 style="text-align: center; color: #2c3e50;">🎯 Pattern Recognition Cheat Sheet</h3>
+            <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">Use this AFTER you've made your guesses!</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div style="background: white; padding: 15px; border-radius: 8px; border-left: 5px solid #3498db;">
+                    <strong style="color: #2c3e50;">🏭 Factory Pattern</strong>
+                    <p style="margin: 10px 0 0 0; color: #666;">When you need to <strong>create different types</strong> of similar products without massive if/else chains</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px; border-left: 5px solid #e74c3c;">
+                    <strong style="color: #2c3e50;">🔄 Strategy Pattern</strong>
+                    <p style="margin: 10px 0 0 0; color: #666;">When you need to <strong>switch between different methods</strong> for accomplishing the same goal</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px; border-left: 5px solid #2ecc71;">
+                    <strong style="color: #2c3e50;">📢 Observer Pattern</strong>
+                    <p style="margin: 10px 0 0 0; color: #666;">When <strong>one event</strong> needs to <strong>notify many systems</strong> automatically</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px; border-left: 5px solid #f39c12;">
+                    <strong style="color: #2c3e50;">⭐ Singleton Pattern</strong>
+                    <p style="margin: 10px 0 0 0; color: #666;">When you need <strong>exactly ONE shared instance</strong> that everyone accesses</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <p style="color: #7f8c8d; margin: 0;"><strong>Remember:</strong> Patterns solve problems. Focus on understanding WHICH pattern solves WHICH problem!</p>
+            <p style="color: #7f8c8d; margin: 10px 0 0 0;">You'll see the code implementations after the breakout. Concepts first! 🎯</p>
+        </div>
+    </div>
+</body>
+</html>
