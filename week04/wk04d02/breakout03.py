@@ -25,7 +25,7 @@ Date: October 21, 2025
 """
 
 from fastapi import FastAPI, HTTPException, status
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
@@ -58,16 +58,8 @@ class PersonalInfo(BaseModel):
     occupation: str = Field(..., min_length=1, description="Current occupation")
     bio: Optional[str] = Field(None, max_length=500, description="Short biography")
     
-    @validator('age')
-    def age_must_be_realistic(cls, v):
-        """Validate that age is within realistic bounds."""
-        if v < 0 or v > 150:
-            raise ValueError('Age must be between 0 and 150')
-        return v
-    
-    class Config:
-        """Pydantic configuration for example generation."""
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "Jane Doe",
                 "age": 28,
@@ -76,6 +68,15 @@ class PersonalInfo(BaseModel):
                 "bio": "Passionate about AI and building scalable systems"
             }
         }
+    )
+    
+    @field_validator('age')
+    @classmethod
+    def age_must_be_realistic(cls, v):
+        """Validate that age is within realistic bounds."""
+        if v < 0 or v > 150:
+            raise ValueError('Age must be between 0 and 150')
+        return v
 
 
 class Hobby(BaseModel):
@@ -88,20 +89,14 @@ class Hobby(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Hobby name")
     skill_level: str = Field(
         ..., 
-        regex="^(beginner|intermediate|advanced|expert)$",
+        pattern="^(beginner|intermediate|advanced|expert)$",
         description="Skill level (beginner, intermediate, advanced, expert)"
     )
     years_experience: int = Field(..., ge=0, le=100, description="Years of experience")
     description: Optional[str] = Field(None, max_length=500, description="Hobby description")
     
-    @validator('skill_level')
-    def validate_skill_level(cls, v):
-        """Ensure skill level is lowercase for consistency."""
-        return v.lower()
-    
-    class Config:
-        """Pydantic configuration for example generation."""
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "Photography",
                 "skill_level": "intermediate",
@@ -109,6 +104,13 @@ class Hobby(BaseModel):
                 "description": "Love capturing landscapes and portraits"
             }
         }
+    )
+    
+    @field_validator('skill_level')
+    @classmethod
+    def validate_skill_level(cls, v):
+        """Ensure skill level is lowercase for consistency."""
+        return v.lower()
 
 
 class HobbyUpdate(BaseModel):
@@ -120,26 +122,27 @@ class HobbyUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     skill_level: Optional[str] = Field(
         None, 
-        regex="^(beginner|intermediate|advanced|expert)$"
+        pattern="^(beginner|intermediate|advanced|expert)$"
     )
     years_experience: Optional[int] = Field(None, ge=0, le=100)
     description: Optional[str] = Field(None, max_length=500)
     
-    @validator('skill_level')
-    def validate_skill_level(cls, v):
-        """Ensure skill level is lowercase for consistency."""
-        if v is not None:
-            return v.lower()
-        return v
-    
-    class Config:
-        """Pydantic configuration for example generation."""
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "skill_level": "advanced",
                 "years_experience": 5
             }
         }
+    )
+    
+    @field_validator('skill_level')
+    @classmethod
+    def validate_skill_level(cls, v):
+        """Ensure skill level is lowercase for consistency."""
+        if v is not None:
+            return v.lower()
+        return v
 
 
 class HobbyResponse(BaseModel):
@@ -154,9 +157,8 @@ class HobbyResponse(BaseModel):
     years_experience: int
     description: Optional[str]
     
-    class Config:
-        """Pydantic configuration for example generation."""
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "id": 1,
                 "name": "Programming",
@@ -165,6 +167,7 @@ class HobbyResponse(BaseModel):
                 "description": "Love building Python applications"
             }
         }
+    )
 
 
 # ============================================
