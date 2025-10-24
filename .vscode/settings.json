@@ -42,7 +42,13 @@
     "CI/CD",
     "MVP",
     "DevOps",
-    "microservices"
+    "microservices",
+    "ecommerce",
+    "psutil",
+    "asyncio",
+    "httpx",
+    "levelno",
+    "msecs"
   ],
   "flagWords": [],
   "ignorePaths": [
