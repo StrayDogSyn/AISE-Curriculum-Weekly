@@ -16,3 +16,11 @@ class OrderService:
         order.cancel()
         self.repository.save(order)
         return True
+    
+    def remove_order(self, order_id: str) -> bool:
+        """Remove an order from the repository completely."""
+        order = self.repository.get_by_id(order_id)
+        if not order:
+            return False
+        self.repository.delete(order_id)
+        return True
