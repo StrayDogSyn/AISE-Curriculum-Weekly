@@ -1,0 +1,14 @@
+artifact_uri: file:///c:/Users/EHunt/Repos/AISE/AISE-Curriculum-Weekly/mlruns/257663400655331226/e6bf757106ba4204882b1d56506689d9/artifacts
+end_time: 1764121051946
+entry_point_name: ''
+experiment_id: '257663400655331226'
+lifecycle_stage: active
+run_id: e6bf757106ba4204882b1d56506689d9
+run_name: FINAL_optuna_best
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1764121047253
+status: 3
+tags: []
+user_id: EHunt

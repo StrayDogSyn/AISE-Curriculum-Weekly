@@ -1,0 +1,14 @@
+artifact_uri: file:///c:/Users/EHunt/Repos/AISE/AISE-Curriculum-Weekly/mlruns/257663400655331226/436d7162e1e74956843a1f168a01f234/artifacts
+end_time: 1764120982572
+entry_point_name: ''
+experiment_id: '257663400655331226'
+lifecycle_stage: active
+run_id: 436d7162e1e74956843a1f168a01f234
+run_name: experiment_2_more_trees
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1764120977115
+status: 3
+tags: []
+user_id: EHunt

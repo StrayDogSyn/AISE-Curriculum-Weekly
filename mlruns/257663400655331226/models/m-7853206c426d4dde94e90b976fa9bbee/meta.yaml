@@ -1,0 +1,10 @@
+artifact_location: file:///c:/Users/EHunt/Repos/AISE/AISE-Curriculum-Weekly/mlruns/257663400655331226/models/m-7853206c426d4dde94e90b976fa9bbee/artifacts
+creation_timestamp: 1764117915547
+experiment_id: '257663400655331226'
+last_updated_timestamp: 1764117919834
+model_id: m-7853206c426d4dde94e90b976fa9bbee
+model_type: null
+name: model
+source_run_id: e8a9b6a2330b4ca28c5eff5b21b7487b
+status: 2
+status_message: null

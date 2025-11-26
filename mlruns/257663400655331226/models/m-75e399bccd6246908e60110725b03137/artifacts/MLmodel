@@ -1,0 +1,22 @@
+artifact_path: file:///c:/Users/EHunt/Repos/AISE/AISE-Curriculum-Weekly/mlruns/257663400655331226/models/m-75e399bccd6246908e60110725b03137/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.7
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.2
+mlflow_version: 3.6.0
+model_id: m-75e399bccd6246908e60110725b03137
+model_size_bytes: 2715279
+model_uuid: m-75e399bccd6246908e60110725b03137
+prompts: null
+run_id: 9002f15e35f84b21922bfe37f8ce215e
+utc_time_created: '2025-11-26 00:46:25.217312'
