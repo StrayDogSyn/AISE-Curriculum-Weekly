@@ -1,5 +1,9 @@
 # Model Serving with REST API and Batch Inference
 
+## Students
+- **Student A:** Eric 'Hunter' Petross
+- **Student B:** Samantha Pomeroy
+
 ## Setup Instructions
 - Create and activate a Python 3.11 environment
 - Install dependencies: `pip install -r requirements.txt`
